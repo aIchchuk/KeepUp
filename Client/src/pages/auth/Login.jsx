@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -61,15 +62,30 @@ const Login = () => {
                             <label className="text-sm font-semibold text-gray-700">Password</label>
                             <a href="#" className="text-xs font-bold text-indigo-600 hover:underline">Forgot?</a>
                         </div>
-                        <input
-                            type="password"
-                            required
-                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
+                        <div className="relative">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                required
+                                className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all pr-14"
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-indigo-600 transition-colors"
+                            >
+                                {showPassword ? (
+                                    <img src="/hide.png" alt="Hide" className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity" />
+                                ) : (
+                                    <img src="/view.png" alt="View" className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity" />
+                                )}
+
+                            </button>
+                        </div>
                     </div>
+
 
                     <button
                         type="submit"

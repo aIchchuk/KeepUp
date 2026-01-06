@@ -31,7 +31,15 @@ const Navbar = () => {
             <div className="flex items-center gap-4">
                 {user ? (
                     <>
-                        <Link to="/profile" className="flex items-center gap-3 pr-4 border-r border-gray-100 hover:opacity-80 transition-opacity">
+                        <Link to="/dashboard" className="text-sm font-semibold text-gray-700 hover:text-indigo-600 transition-colors px-4 py-2">
+                            Dashboard
+                        </Link>
+                        <Link to="/marketplace" className="text-sm font-semibold text-gray-700 hover:text-indigo-600 transition-colors px-4 py-2">
+                            Marketplace
+                        </Link>
+
+                        <Link to="/profile" className="flex items-center gap-3 pr-4 border-l border-gray-100 pl-4 hover:opacity-80 transition-opacity">
+
                             <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs uppercase">
                                 {user.name.charAt(0)}
                             </div>

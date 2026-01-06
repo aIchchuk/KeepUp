@@ -41,8 +41,17 @@ app.use("/api/logs", activityRoutes);
 const PORT = process.env.PORT || 5000;
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
-        app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-    })
-    .catch((err) => console.log(err));
+try {
+    mongoose.connect(process.env.MONGO_URI)
+        .then(() => {
+            app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+        })
+        .catch((err) => {
+            console.error("Mongoose connection promise error:", err);
+            process.exit(1);
+        });
+} catch (error) {
+    console.error("Global startup error logic:", error);
+    process.exit(1);
+}
+

@@ -1,5 +1,7 @@
 import User from "../models/user.model.js";
+import Activity from "../models/activity.model.js";
 import bcrypt from "bcryptjs";
+
 import jwt from "jsonwebtoken";
 import { sendOtpEmail } from "../utils/mail.util.js";
 
@@ -32,8 +34,12 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({ name, email, password: hashedPassword });
+
+    await Activity.create({ user: user._id, actionType: "register", ipAddress: req.ip });
+
     res.status(201).json({ token: generateToken(user._id), user: { id: user._id, name: user.name, email: user.email } });
 };
+
 
 // Login
 export const loginUser = async (req, res) => {
@@ -56,8 +62,11 @@ export const loginUser = async (req, res) => {
         return res.status(200).json({ mfaRequired: true, email: user.email, message: "MFA code sent to email" });
     }
 
+    await Activity.create({ user: user._id, actionType: "login", ipAddress: req.ip });
+
     res.json({ token: generateToken(user._id), user: { id: user._id, name: user.name, email: user.email } });
 };
+
 
 // Verify MFA
 export const verifyMfa = async (req, res) => {
