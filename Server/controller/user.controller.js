@@ -13,59 +13,75 @@ const generateToken = (id) => {
 // Password Validation Utility
 const isPasswordStrong = (password) => {
     // Min 8 chars, at least one uppercase, one lowercase, one number, and one special character
-    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    // Expanded special characters set
+    const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[.@$!%*?&#])[A-Za-z\d.@$!%*?&#]{8,}$/;
     return strongRegex.test(password);
 };
 
+
 // Register
 export const registerUser = async (req, res) => {
-    const { name, email, password } = req.body;
-    if (!name || !email || !password) return res.status(400).json({ message: "All fields required" });
+    try {
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) return res.status(400).json({ message: "All fields required" });
 
-    if (!isPasswordStrong(password)) {
-        return res.status(400).json({
-            message: "Password too weak. Must be at least 8 characters long and include uppercase, lowercase, number, and special character."
-        });
+        if (!isPasswordStrong(password)) {
+            return res.status(400).json({
+                message: "Password too weak. Must be at least 8 characters long and include uppercase, lowercase, number, and special character."
+            });
+        }
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) return res.status(400).json({ message: "Email already exists" });
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({ name, email, password: hashedPassword });
+
+        await Activity.create({ user: user._id, actionType: "register", ipAddress: req.ip });
+
+        res.status(201).json({ token: generateToken(user._id), user: { id: user._id, name: user.name, email: user.email } });
+    } catch (error) {
+        console.error("Registration Error:", error);
+        res.status(500).json({ message: "Internal server error during registration", details: error.message });
     }
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) return res.status(400).json({ message: "Email already exists" });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await User.create({ name, email, password: hashedPassword });
-
-    await Activity.create({ user: user._id, actionType: "register", ipAddress: req.ip });
-
-    res.status(201).json({ token: generateToken(user._id), user: { id: user._id, name: user.name, email: user.email } });
 };
+
+
+
 
 
 // Login
 export const loginUser = async (req, res) => {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) return res.status(400).json({ message: "Invalid credentials" });
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) return res.status(400).json({ message: "Invalid credentials" });
 
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    if (user.mfaEnabled) {
-        // Generate a 6-digit OTP
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
-        user.mfaCode = await bcrypt.hash(otp, 10);
-        user.mfaExpires = Date.now() + 10 * 60 * 1000; // 10 mins
-        await user.save();
+        if (user.mfaEnabled) {
+            // Generate a 6-digit OTP
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            user.mfaCode = await bcrypt.hash(otp, 10);
+            user.mfaExpires = Date.now() + 10 * 60 * 1000; // 10 mins
+            await user.save();
 
-        await sendOtpEmail(user.email, otp);
+            await sendOtpEmail(user.email, otp);
 
-        return res.status(200).json({ mfaRequired: true, email: user.email, message: "MFA code sent to email" });
+            return res.status(200).json({ mfaRequired: true, email: user.email, message: "MFA code sent to email" });
+        }
+
+        await Activity.create({ user: user._id, actionType: "login", ipAddress: req.ip });
+
+        res.json({ token: generateToken(user._id), user: { id: user._id, name: user.name, email: user.email } });
+    } catch (error) {
+        console.error("Login Error:", error);
+        res.status(500).json({ message: "Internal server error during login", details: error.message });
     }
-
-    await Activity.create({ user: user._id, actionType: "login", ipAddress: req.ip });
-
-    res.json({ token: generateToken(user._id), user: { id: user._id, name: user.name, email: user.email } });
 };
+
 
 
 // Verify MFA

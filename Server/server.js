@@ -18,15 +18,28 @@ const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors());
-app.use(helmet());
+app.use(cors({
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    credentials: true
+}));
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
+
+// Simple Request Logger
+app.use((req, reqRes, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+    next();
+});
+
 
 // Rate Limiting
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 5, // limit each IP to 5 requests per windowMs
+    windowMs: 15 * 60 * 1000,
+    max: 100, // Loosened for development
     message: { message: "Too many login attempts, please try again after 15 minutes" }
 });
+
 
 
 // Routes
