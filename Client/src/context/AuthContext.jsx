@@ -27,8 +27,26 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         const res = await api.post('/users/login', { email, password });
+        if (res.data.mfaRequired) {
+            return res.data;
+        }
         localStorage.setItem('token', res.data.token);
         setUser(res.data.user);
+        return res.data;
+    };
+
+    const verifyMfa = async (email, code) => {
+        const res = await api.post('/users/verify-mfa', { email, code });
+        localStorage.setItem('token', res.data.token);
+        setUser(res.data.user);
+        return res.data;
+    };
+
+    const toggleMfa = async () => {
+        const res = await api.post('/users/toggle-mfa');
+        // Refresh user profile to get updated mfaEnabled state
+        const profileRes = await api.get('/users/profile');
+        setUser(profileRes.data);
         return res.data;
     };
 
@@ -45,7 +63,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <AuthContext.Provider value={{ user, login, register, logout, verifyMfa, toggleMfa, loading }}>
             {children}
         </AuthContext.Provider>
     );

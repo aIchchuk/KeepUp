@@ -32,7 +32,9 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    mfaSecret: String // for authenticator apps if you implement MFA
+    mfaSecret: String, // for authenticator apps (TOTP)
+    mfaCode: String,   // for Email OTP
+    mfaExpires: Date   // for Email OTP expiry
 });
 
 export default mongoose.model("User", userSchema);

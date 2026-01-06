@@ -5,6 +5,8 @@ import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
+import VerifyMfa from './pages/auth/VerifyMfa';
+import Profile from './pages/Profile';
 import './App.css';
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-mfa" element={<VerifyMfa />} />
+            <Route path="/profile" element={<Profile />} />
           </Routes>
         </div>
       </Router>

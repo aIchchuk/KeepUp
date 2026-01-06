@@ -16,8 +16,12 @@ const Login = () => {
         setError('');
         setLoading(true);
         try {
-            await login(email, password);
-            navigate('/');
+            const data = await login(email, password);
+            if (data.mfaRequired) {
+                navigate('/verify-mfa', { state: { email: data.email } });
+            } else {
+                navigate('/');
+            }
         } catch (err) {
             setError(err.response?.data?.message || 'Invalid credentials');
         } finally {
