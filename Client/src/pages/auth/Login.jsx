@@ -21,7 +21,7 @@ const Login = () => {
             if (data.mfaRequired) {
                 navigate('/verify-mfa', { state: { email: data.email } });
             } else {
-                navigate('/');
+                navigate('/dashboard');
             }
         } catch (err) {
             setError(err.response?.data?.message || 'Invalid credentials');

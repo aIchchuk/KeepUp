@@ -23,7 +23,7 @@ const VerifyMfa = () => {
         setLoading(true);
         try {
             await verifyMfa(email, code);
-            navigate('/');
+            navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.message || 'Invalid MFA code');
         } finally {
