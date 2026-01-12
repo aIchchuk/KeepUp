@@ -65,7 +65,7 @@ export const loginUser = async (req, res) => {
             // Generate a 6-digit OTP
             const otp = Math.floor(100000 + Math.random() * 900000).toString();
             user.mfaCode = await bcrypt.hash(otp, 10);
-            user.mfaExpires = Date.now() + 10 * 60 * 1000; // 10 mins
+            user.mfaExpires = Date.now() + 3 * 60 * 1000; // 3 mins
             await user.save();
 
             await sendOtpEmail(user.email, otp);

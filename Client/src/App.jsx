@@ -14,23 +14,27 @@ import Marketplace from './pages/Marketplace';
 
 import './App.css';
 
+import DashboardLayout from './layouts/DashboardLayout';
+
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="antialiased font-sans text-gray-900 bg-gray-50 min-h-screen">
-          <Navbar />
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/verify-mfa" element={<VerifyMfa />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/projects/:id" element={<ProjectDetail />} />
-            <Route path="/marketplace" element={<Marketplace />} />
+            {/* Public Routes with Global Navbar */}
+            <Route element={<><Navbar /><Home /></>} path="/" />
+            <Route element={<><Navbar /><Login /></>} path="/login" />
+            <Route element={<><Navbar /><Register /></>} path="/register" />
+            <Route element={<><Navbar /><VerifyMfa /></>} path="/verify-mfa" />
 
-
+            {/* Internal Dashboard Routes with Sidebar */}
+            <Route element={<DashboardLayout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/projects/:id" element={<ProjectDetail />} />
+              <Route path="/marketplace" element={<Marketplace />} />
+              <Route path="/profile" element={<Profile />} />
+            </Route>
           </Routes>
         </div>
       </Router>
