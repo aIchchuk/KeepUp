@@ -8,7 +8,7 @@ const Sidebar = () => {
     const navItems = [
         { name: 'Dashboard', icon: '/dashboard.png', path: '/dashboard' },
         { name: 'Marketplace', icon: '/shopping-cart.png', path: '/marketplace' },
-        { name: 'Profile', icon: '/account.png', path: '/profile' },
+        { name: 'Profile', icon: '/user.png', path: '/profile' },
     ];
 
     return (

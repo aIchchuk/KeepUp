@@ -77,7 +77,9 @@ const Dashboard = () => {
                                     </p>
                                 </div>
                                 <div className="pt-4 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-gray-400">
-                                    <span>Owner</span>
+                                    <span>
+                                        By {project.owner?._id === user?.id || project.owner === user?.id ? 'You' : project.owner?.name || 'Unknown'}
+                                    </span>
                                     <span className="text-indigo-600">Open Project →</span>
                                 </div>
                             </div>

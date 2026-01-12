@@ -6,7 +6,7 @@ const projectSchema = new mongoose.Schema({
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     members: [{
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-        role: { type: String, enum: ["owner", "editor", "viewer"], default: "viewer" }
+        role: { type: String, enum: ["owner", "member"], default: "member" }
     }],
     createdAt: { type: Date, default: Date.now }
 });

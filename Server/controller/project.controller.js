@@ -48,7 +48,7 @@ export const inviteMember = async (req, res) => {
         const isMember = project.members.some(member => member.user.toString() === userToInvite._id.toString());
         if (isMember) return res.status(400).json({ message: "User is already a member" });
 
-        project.members.push({ user: userToInvite._id, role: "viewer" });
+        project.members.push({ user: userToInvite._id, role: "member" });
         await project.save();
 
         await Activity.create({
