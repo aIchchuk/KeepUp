@@ -6,9 +6,9 @@ const Sidebar = () => {
     const { user, logout } = useAuth();
 
     const navItems = [
-        { name: 'Dashboard', icon: '📊', path: '/dashboard' },
-        { name: 'Marketplace', icon: '🛒', path: '/marketplace' },
-        { name: 'Profile', icon: '👤', path: '/profile' },
+        { name: 'Dashboard', icon: '/dashboard.png', path: '/dashboard' },
+        { name: 'Marketplace', icon: '/shopping-cart.png', path: '/marketplace' },
+        { name: 'Profile', icon: '/account.png', path: '/profile' },
     ];
 
     return (
@@ -36,8 +36,16 @@ const Sidebar = () => {
                                 : 'text-gray-500 hover:bg-gray-50 hover:text-indigo-600'}
                         `}
                     >
-                        <span className="text-xl">{item.icon}</span>
-                        <span>{item.name}</span>
+                        {({ isActive }) => (
+                            <>
+                                <img
+                                    src={item.icon}
+                                    alt={item.name}
+                                    className={`w-6 h-6 object-contain ${isActive ? 'brightness-0 invert' : ''}`}
+                                />
+                                <span>{item.name}</span>
+                            </>
+                        )}
                     </NavLink>
                 ))}
             </nav>
@@ -57,7 +65,7 @@ const Sidebar = () => {
                     onClick={logout}
                     className="w-full flex items-center gap-4 px-4 py-3.5 text-gray-500 font-bold hover:bg-red-50 hover:text-red-600 rounded-2xl transition-all duration-300"
                 >
-                    <span className="text-xl">🚪</span>
+                    <img src="/logout.png" alt="Logout" className="w-6 h-6 object-contain" />
                     <span>Sign Out</span>
                 </button>
             </div>
