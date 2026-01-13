@@ -21,7 +21,7 @@ export const getTasks = async (req, res) => {
 // Create task
 export const createTask = async (req, res) => {
     const { id } = req.params; // projectId
-    const { title, description, status, priority, dueDate, assignedTo } = req.body;
+    const { title, description, status, priority, dueDate, assignedTo, type, parentId, content } = req.body;
 
     // Security Fix: Check if user is a member of the project
     const project = await Project.findById(id);
@@ -36,7 +36,10 @@ export const createTask = async (req, res) => {
         priority,
         dueDate,
         assignedTo,
-        project: id
+        project: id,
+        type: type || 'task',
+        parentId: parentId || null,
+        content: content || ''
     });
 
     await Activity.create({
