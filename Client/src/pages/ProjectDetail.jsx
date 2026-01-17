@@ -2,6 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/api';
 import { useAuth } from '../context/AuthContext';
+import {
+    DndContext,
+    closestCorners,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+    DragOverlay,
+    defaultDropAnimationSideEffects
+} from '@dnd-kit/core';
+import {
+    arrayMove,
+    sortableKeyboardCoordinates,
+} from '@dnd-kit/sortable';
+import StatusColumn from '../components/StatusColumn';
+import TaskCard from '../components/TaskCard';
 
 const ProjectDetail = () => {
     const { id } = useParams();
@@ -33,6 +49,18 @@ const ProjectDetail = () => {
         status: 'todo',
         content: ''
     });
+    const [activeTask, setActiveTask] = useState(null);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor, {
+            activationConstraint: {
+                distance: 8, // Avoid accidental drags when clicking
+            },
+        }),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        })
+    );
 
     useEffect(() => {
         fetchProjectData();
@@ -146,11 +174,44 @@ const ProjectDetail = () => {
 
     const handleQuickStatusUpdate = async (item, newStatus) => {
         try {
+            // Optimistic Update
+            setItems(prev => prev.map(i => i._id === item._id ? { ...i, status: newStatus } : i));
+
             await api.patch(`/projects/${id}/tasks/${item._id}`, { status: newStatus });
             fetchProjectData();
         } catch (err) {
             console.error('Error updating status:', err);
             alert(`Failed to update status: ${err.response?.data?.message || err.message}`);
+            fetchProjectData(); // Revert on failure
+        }
+    };
+
+    const handleDragStart = (event) => {
+        const { active } = event;
+        const task = items.find(i => i._id === active.id);
+        setActiveTask(task);
+    };
+
+    const handleDragEnd = async (event) => {
+        const { active, over } = event;
+        setActiveTask(null);
+
+        if (!over) return;
+
+        const overStatus = over.data.current?.status || over.data.current?.task?.status;
+        const activeTask = items.find(i => i._id === active.id);
+
+        if (activeTask && overStatus && activeTask.status !== overStatus) {
+            try {
+                // Optimistic Update
+                setItems(prev => prev.map(i => i._id === active.id ? { ...i, status: overStatus } : i));
+
+                await api.patch(`/projects/${id}/tasks/${active.id}`, { status: overStatus });
+                fetchProjectData();
+            } catch (err) {
+                console.error('Error moving task:', err);
+                fetchProjectData(); // Revert on failure
+            }
         }
     };
 
@@ -239,58 +300,36 @@ const ProjectDetail = () => {
 
                 {/* Items Layout */}
                 <div className="space-y-12">
-                    {/* Render Tasks in columns as before, but only root ones or those in lists */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {['todo', 'in-progress', 'done'].map(status => (
-                            <div key={status} className="space-y-4">
-                                <div className="flex items-center justify-between px-2">
-                                    <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400">
-                                        {status.replace('-', ' ')}
-                                    </h3>
-                                    <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md text-[10px] font-bold">
-                                        {items.filter(i => i.type === 'task' && i.status === status).length}
-                                    </span>
-                                </div>
+                    {/* Draggable Task Board */}
+                    <DndContext
+                        sensors={sensors}
+                        collisionDetection={closestCorners}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                    >
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            {['todo', 'in-progress', 'done'].map(status => (
+                                <StatusColumn
+                                    key={status}
+                                    status={status}
+                                    items={items.filter(i => i.type === 'task' && i.status === status)}
+                                    onTaskClick={openEditModal}
+                                    onQuickStatusUpdate={handleQuickStatusUpdate}
+                                />
+                            ))}
+                        </div>
 
-                                <div className="space-y-4">
-                                    {items.filter(i => i.type === 'task' && i.status === status).map(task => (
-                                        <div
-                                            key={task._id}
-                                            onClick={() => openEditModal(task)}
-                                            className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer hover:-translate-y-1 relative"
-                                        >
-                                            <div className="flex gap-4">
-                                                <button
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                        handleQuickStatusUpdate(task, task.status === 'done' ? 'todo' : 'done');
-                                                    }}
-                                                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${task.status === 'done' ? 'bg-green-500 border-green-500 text-white' : 'border-gray-200 group-hover:border-indigo-400'}`}
-                                                >
-                                                    {task.status === 'done' && (
-                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
-                                                    )}
-                                                </button>
-                                                <div className="flex-1 space-y-3">
-                                                    <div className="flex items-start justify-between gap-2">
-                                                        <h4 className={`font-bold text-gray-900 group-hover:text-indigo-600 transition-colors leading-tight ${task.status === 'done' ? 'line-through text-gray-400' : ''}`}>
-                                                            {task.title}
-                                                        </h4>
-                                                        <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-400' : 'bg-green-500'}`}></div>
-                                                    </div>
-                                                    {task.description && (
-                                                        <p className={`text-sm text-gray-400 line-clamp-2 leading-relaxed ${task.status === 'done' ? 'opacity-50' : ''}`}>
-                                                            {task.description}
-                                                        </p>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                        <DragOverlay adjustScale={false}>
+                            {activeTask ? (
+                                <TaskCard
+                                    task={activeTask}
+                                    onClick={() => { }}
+                                    onQuickStatusUpdate={() => { }}
+                                    isOverlay={true}
+                                />
+                            ) : null}
+                        </DragOverlay>
+                    </DndContext>
 
                     {/* Render Pages and Lists below */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-40">
