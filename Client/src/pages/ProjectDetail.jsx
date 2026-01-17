@@ -116,6 +116,7 @@ const ProjectDetail = () => {
             fetchProjectData();
         } catch (err) {
             console.error('Error deleting item:', err);
+            alert(`Failed to delete item: ${err.response?.data?.message || err.message}`);
         }
     };
 
@@ -127,6 +128,7 @@ const ProjectDetail = () => {
             fetchProjectData();
         } catch (err) {
             console.error('Error updating item:', err);
+            alert(`Failed to update item: ${err.response?.data?.message || err.message}`);
         }
     };
 
@@ -140,6 +142,16 @@ const ProjectDetail = () => {
             content: item.content || ''
         });
         setShowEditModal(true);
+    };
+
+    const handleQuickStatusUpdate = async (item, newStatus) => {
+        try {
+            await api.patch(`/projects/${id}/tasks/${item._id}`, { status: newStatus });
+            fetchProjectData();
+        } catch (err) {
+            console.error('Error updating status:', err);
+            alert(`Failed to update status: ${err.response?.data?.message || err.message}`);
+        }
     };
 
     if (loading) return <div className="p-20 text-center animate-pulse text-gray-400 font-bold text-xl">Loading project...</div>;
@@ -245,19 +257,33 @@ const ProjectDetail = () => {
                                         <div
                                             key={task._id}
                                             onClick={() => openEditModal(task)}
-                                            className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-md transition-all group cursor-pointer hover:-translate-y-1"
+                                            className="bg-white p-6 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer hover:-translate-y-1 relative"
                                         >
-                                            <div className="space-y-3">
-                                                <div className="flex items-start justify-between">
-                                                    <h4 className="font-bold text-gray-900 group-hover:text-indigo-600 transition-colors">{task.title}</h4>
-                                                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-md ${task.priority === 'high' ? 'bg-red-50 text-red-600' :
-                                                        task.priority === 'medium' ? 'bg-amber-50 text-amber-600' :
-                                                            'bg-green-50 text-green-600'
-                                                        }`}>
-                                                        {task.priority}
-                                                    </span>
+                                            <div className="flex gap-4">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleQuickStatusUpdate(task, task.status === 'done' ? 'todo' : 'done');
+                                                    }}
+                                                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${task.status === 'done' ? 'bg-green-500 border-green-500 text-white' : 'border-gray-200 group-hover:border-indigo-400'}`}
+                                                >
+                                                    {task.status === 'done' && (
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" /></svg>
+                                                    )}
+                                                </button>
+                                                <div className="flex-1 space-y-3">
+                                                    <div className="flex items-start justify-between gap-2">
+                                                        <h4 className={`font-bold text-gray-900 group-hover:text-indigo-600 transition-colors leading-tight ${task.status === 'done' ? 'line-through text-gray-400' : ''}`}>
+                                                            {task.title}
+                                                        </h4>
+                                                        <div className={`w-2 h-2 rounded-full mt-2 shrink-0 ${task.priority === 'high' ? 'bg-red-500' : task.priority === 'medium' ? 'bg-yellow-400' : 'bg-green-500'}`}></div>
+                                                    </div>
+                                                    {task.description && (
+                                                        <p className={`text-sm text-gray-400 line-clamp-2 leading-relaxed ${task.status === 'done' ? 'opacity-50' : ''}`}>
+                                                            {task.description}
+                                                        </p>
+                                                    )}
                                                 </div>
-                                                <p className="text-sm text-gray-500 line-clamp-2 leading-relaxed">{task.description}</p>
                                             </div>
                                         </div>
                                     ))}
@@ -267,38 +293,50 @@ const ProjectDetail = () => {
                     </div>
 
                     {/* Render Pages and Lists below */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-20">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-40">
                         {items.filter(i => i.type !== 'task').map(item => (
                             <div
                                 key={item._id}
                                 onClick={() => openEditModal(item)}
-                                className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer hover:-translate-y-1"
+                                className="bg-white p-8 rounded-[40px] border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer hover:-translate-y-2 relative"
                             >
                                 <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center p-2.5 group-hover:bg-indigo-600 transition-colors">
+                                    <div className="flex items-center gap-5">
+                                        <div className={`w-14 h-14 rounded-[20px] flex items-center justify-center p-3.5 transition-all ${item.type === 'page' ? 'bg-amber-50 text-amber-600 group-hover:bg-amber-600' : 'bg-violet-50 text-violet-600 group-hover:bg-violet-600'}`}>
                                             <img
                                                 src={item.type === 'page' ? '/page.png' : '/list.png'}
                                                 alt={item.type}
-                                                className="w-full h-full object-contain group-hover:brightness-0 group-hover:invert"
+                                                className="w-full h-full object-contain group-hover:brightness-0 group-hover:invert transition-all"
                                             />
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-bold text-gray-900">{item.title}</h3>
-                                            <p className="text-sm text-gray-400 mt-1 uppercase tracking-widest font-bold">{item.type}</p>
+                                            <h3 className="text-2xl font-black text-gray-900 tracking-tight">{item.title}</h3>
+                                            <p className="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-black">{item.type}</p>
                                         </div>
                                     </div>
-                                    <button className="text-gray-300 hover:text-indigo-600 transition-colors">•••</button>
+                                    <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteItem(item._id); }}
+                                            className="p-3 text-gray-300 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all"
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        </button>
+                                    </div>
                                 </div>
                                 {item.type === 'page' && (
-                                    <p className="mt-4 text-gray-500 line-clamp-3 leading-relaxed">{item.content || item.description || 'No content yet...'}</p>
+                                    <div className="mt-6">
+                                        <p className="text-gray-500 line-clamp-2 leading-relaxed text-lg italic">{item.content || item.description || 'Blank canvas...'}</p>
+                                    </div>
                                 )}
                                 {item.type === 'list' && (
-                                    <div className="mt-6 space-y-3">
-                                        <div className="h-2 w-full bg-gray-50 rounded-full overflow-hidden">
-                                            <div className="h-full bg-indigo-600 w-1/3 rounded-full"></div>
+                                    <div className="mt-8 space-y-4">
+                                        <div className="flex items-center justify-between text-[11px] font-bold text-gray-400 uppercase tracking-widest px-1">
+                                            <span>Sub-items</span>
+                                            <span>{items.filter(i => i.parentId === item._id).length} items</span>
                                         </div>
-                                        <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Grouped Activities</p>
+                                        <div className="h-3 w-full bg-gray-50 rounded-full overflow-hidden border border-gray-100">
+                                            <div className="h-full bg-violet-600 w-1/4 rounded-full shadow-sm"></div>
+                                        </div>
                                     </div>
                                 )}
                             </div>
