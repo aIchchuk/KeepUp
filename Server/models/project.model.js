@@ -8,6 +8,8 @@ const projectSchema = new mongoose.Schema({
         user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
         role: { type: String, enum: ["owner", "member"], default: "member" }
     }],
+    coverImage: { type: String, default: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=2000" },
+    icon: { type: String, default: "🚀" },
     createdAt: { type: Date, default: Date.now }
 });
 

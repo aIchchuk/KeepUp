@@ -221,22 +221,42 @@ const ProjectDetail = () => {
     const rootItems = items.filter(item => !item.parentId);
 
     return (
-        <div className="min-h-screen bg-gray-50/50">
-            <div className="max-w-7xl mx-auto p-8 space-y-8">
-                {/* Breadcrumbs & Header */}
-                <div className="space-y-4">
-                    <Link to="/dashboard" className="text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
-                        ← Back to Workspace
-                    </Link>
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">{project.title}</h1>
-                            <p className="text-gray-500 mt-2 max-w-2xl">{project.description}</p>
+        <div className="min-h-screen bg-white">
+            {/* Cover Image */}
+            <div className="h-[300px] w-full relative group overflow-hidden">
+                <img
+                    src={project.coverImage || "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=2000"}
+                    alt="Cover"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/10 transition-opacity group-hover:bg-black/20" />
+                <button className="absolute bottom-6 right-8 bg-white/90 backdrop-blur-md px-4 py-2 rounded-xl text-xs font-bold text-gray-800 opacity-0 group-hover:opacity-100 transition-all hover:bg-white shadow-lg">
+                    Change Cover
+                </button>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-12 pb-20">
+                {/* Header Section */}
+                <div className="relative -mt-12 mb-10 space-y-4">
+                    {/* Icon / Emoji */}
+                    <div className="text-5xl bg-white w-24 h-24 rounded-[28px] shadow-xl flex items-center justify-center border-4 border-white transform transition-all hover:scale-105 cursor-pointer relative group/icon group">
+                        {project.icon || "🚀"}
+                        <div className="absolute inset-0 bg-black/0 group-hover/icon:bg-black/5 rounded-[28px] transition-all" />
+                    </div>
+
+                    <div className="flex items-end justify-between gap-10">
+                        <div className="flex-1 space-y-3">
+                            <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+                                {project.title}
+                            </h1>
+                            <p className="text-base text-gray-400 font-medium max-w-2xl leading-relaxed">
+                                {project.description}
+                            </p>
                         </div>
-                        <div className="flex gap-3">
+                        <div className="flex items-center gap-4 pb-4">
                             <button
                                 onClick={() => setShowInviteModal(true)}
-                                className="bg-white text-gray-900 border border-gray-200 px-6 py-3 rounded-2xl font-bold hover:bg-gray-50 transition-all"
+                                className="bg-white text-gray-700 border border-gray-100 px-8 py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-sm"
                             >
                                 Invite
                             </button>
@@ -246,49 +266,49 @@ const ProjectDetail = () => {
                                         e.stopPropagation();
                                         setShowCreateDropdown(!showCreateDropdown);
                                     }}
-                                    className="bg-gray-900 text-white px-8 py-3 rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200"
+                                    className="bg-gray-900 text-white px-10 py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-2xl shadow-gray-200"
                                 >
-                                    + Create
+                                    + Add Item
                                 </button>
                                 {showCreateDropdown && (
-                                    <div className="absolute right-0 top-full mt-4 w-72 bg-white border border-gray-100 rounded-[32px] shadow-2xl shadow-gray-200/50 p-3 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
-                                        <div className="px-4 py-2 mb-2">
-                                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Workspace Addition</p>
+                                    <div className="absolute right-0 top-full mt-6 w-80 bg-white border border-gray-100 rounded-[40px] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] p-4 z-50 animate-in fade-in slide-in-from-top-6 duration-300">
+                                        <div className="px-4 py-2 mb-3">
+                                            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Workspace Addition</p>
                                         </div>
                                         <button
                                             onClick={() => openModal('task')}
-                                            className="w-full text-left p-4 hover:bg-indigo-50/50 rounded-2xl transition-all group flex items-start gap-4"
+                                            className="w-full text-left p-5 hover:bg-indigo-50/50 rounded-3xl transition-all group flex items-start gap-5"
                                         >
-                                            <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
-                                                <img src="/clipboard.png" alt="Task" className="w-5 h-5 object-contain" />
+                                            <div className="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
+                                                <img src="/clipboard.png" alt="Task" className="w-6 h-6 object-contain" />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-bold text-gray-900">New Task</p>
-                                                <p className="text-[11px] text-gray-500 mt-0.5">Assign work with status & priority</p>
+                                                <p className="text-base font-bold text-gray-900">New Task</p>
+                                                <p className="text-xs text-gray-500 mt-1">Assign work with status & priority</p>
                                             </div>
                                         </button>
                                         <button
                                             onClick={() => openModal('list')}
-                                            className="w-full text-left p-4 hover:bg-violet-50/50 rounded-2xl transition-all group flex items-start gap-4"
+                                            className="w-full text-left p-5 hover:bg-violet-50/50 rounded-3xl transition-all group flex items-start gap-5"
                                         >
-                                            <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
-                                                <img src="/list.png" alt="List" className="w-5 h-5 object-contain" />
+                                            <div className="w-12 h-12 bg-violet-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
+                                                <img src="/list.png" alt="List" className="w-6 h-6 object-contain" />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-bold text-gray-900">New List</p>
-                                                <p className="text-[11px] text-gray-500 mt-0.5">Group related tasks together</p>
+                                                <p className="text-base font-bold text-gray-900">New List</p>
+                                                <p className="text-xs text-gray-500 mt-1">Group related tasks together</p>
                                             </div>
                                         </button>
                                         <button
                                             onClick={() => openModal('page')}
-                                            className="w-full text-left p-4 hover:bg-amber-50/50 rounded-2xl transition-all group flex items-start gap-4"
+                                            className="w-full text-left p-5 hover:bg-amber-50/50 rounded-3xl transition-all group flex items-start gap-5"
                                         >
-                                            <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
-                                                <img src="/page.png" alt="Page" className="w-5 h-5 object-contain" />
+                                            <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0 group-hover:bg-white transition-colors">
+                                                <img src="/page.png" alt="Page" className="w-6 h-6 object-contain" />
                                             </div>
                                             <div>
-                                                <p className="text-sm font-bold text-gray-900">New Page</p>
-                                                <p className="text-[11px] text-gray-500 mt-0.5">Immersive canvas for documentation</p>
+                                                <p className="text-base font-bold text-gray-900">New Page</p>
+                                                <p className="text-xs text-gray-500 mt-1">Immersive canvas for documentation</p>
                                             </div>
                                         </button>
                                     </div>
