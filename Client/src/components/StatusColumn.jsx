@@ -25,7 +25,7 @@ const StatusColumn = ({ status, items, onTaskClick, onQuickStatusUpdate }) => {
 
             <div
                 ref={setNodeRef}
-                className={`space-y-4 min-h-[500px] p-2 rounded-[32px] transition-all duration-300 ${isOver ? 'bg-indigo-50/50 ring-2 ring-indigo-200 ring-dashed' : 'bg-transparent'}`}
+                className={`space-y-4 p-2 rounded-[32px] transition-all duration-300 ${isOver ? 'bg-indigo-50/50 ring-2 ring-indigo-200 ring-dashed' : 'bg-transparent'}`}
             >
                 <SortableContext
                     items={items.map(i => i._id)}
