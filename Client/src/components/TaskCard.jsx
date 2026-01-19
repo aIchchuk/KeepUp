@@ -32,7 +32,7 @@ const TaskCard = ({ task, onClick, onQuickStatusUpdate, isOverlay }) => {
             {...attributes}
             {...listeners}
             onClick={() => onClick(task)}
-            className={`bg-white p-4 rounded-[20px] border transition-all cursor-grab active:cursor-grabbing group relative ${isOverlay ? 'rotate-2 shadow-2xl border-indigo-200 w-[300px]' : 'border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1'}`}
+            className={`bg-white p-6 rounded-[32px] border transition-all cursor-grab active:cursor-grabbing group relative mx-auto w-full max-w-[320px] ${isOverlay ? 'rotate-2 shadow-2xl border-indigo-200' : 'border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1'}`}
         >
             <div className="flex gap-3">
                 <button

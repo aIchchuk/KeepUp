@@ -305,7 +305,7 @@ const ProjectDetail = () => {
             <div className="relative z-10 min-h-screen flex flex-col pt-[9vh]">
                 <div className="max-w-7xl mx-auto px-8 w-full pb-20">
                     {/* Main Content Box */}
-                    <div className="bg-white/90 backdrop-blur-xl rounded-[48px] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.3)] border border-white/20 p-12 min-h-[650px]">
+                    <div className="bg-white/50 backdrop-blur-xl rounded-[48px] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.3)] border border-white/20 p-12 min-h-[610px]">
                         {/* Header Section */}
                         <div className="mb-12">
                             <div className="flex items-start justify-between gap-10">
@@ -319,20 +319,20 @@ const ProjectDetail = () => {
                                         </div>
                                         <span>{project.title}</span>
                                     </h1>
-                                    <p className="text-xl text-gray-500 font-medium max-w-2xl leading-relaxed">
+                                    <p className="text-xl text-gray-800 font-bold max-w-2xl leading-relaxed">
                                         {project.description}
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-4">
                                     <button
                                         onClick={openCoverModal}
-                                        className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-2xl text-xs font-bold text-gray-800 transition-all hover:bg-white shadow-lg border border-gray-100"
+                                        className="bg-white px-6 py-3 rounded-2xl text-xs font-bold text-gray-900 transition-all hover:bg-gray-50 shadow-lg border border-gray-100"
                                     >
                                         Change Cover
                                     </button>
                                     <button
                                         onClick={() => setShowInviteModal(true)}
-                                        className="bg-white text-gray-700 border border-gray-100 px-8 py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-sm"
+                                        className="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-md"
                                     >
                                         Invite
                                     </button>
@@ -458,16 +458,16 @@ const ProjectDetail = () => {
                                     )}
 
                                     {/* Render Pages and Lists below */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-40">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 pb-40">
                                         {items.filter(i => i.type !== 'task').map(item => (
                                             <div
                                                 key={item._id}
                                                 onClick={() => openEditModal(item)}
-                                                className="bg-white p-5 rounded-[24px] border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer hover:-translate-y-1 relative"
+                                                className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl transition-all group cursor-pointer hover:-translate-y-1 relative h-full flex flex-col justify-between mx-auto w-full max-w-[320px]"
                                             >
                                                 <div className="flex items-start justify-between">
                                                     <div className="flex items-center gap-4">
-                                                        <div className={`w-10 h-10 rounded-[14px] flex items-center justify-center p-2.5 transition-all ${item.type === 'page' ? 'bg-amber-50 text-amber-600 group-hover:bg-amber-600' : 'bg-violet-50 text-violet-600 group-hover:bg-violet-600'}`}>
+                                                        <div className={`w-12 h-12 rounded-[18px] flex items-center justify-center p-3 transition-all ${item.type === 'page' ? 'bg-amber-50 text-amber-600 group-hover:bg-amber-600' : 'bg-violet-50 text-violet-600 group-hover:bg-violet-600'}`}>
                                                             <img
                                                                 src={item.type === 'page' ? '/page.png' : '/list.png'}
                                                                 alt={item.type}
@@ -784,8 +784,7 @@ const ProjectDetail = () => {
                         )}
 
                         {/* Side-Peek Detail Drawer */}
-                        {/* Side-Peek Detail Drawer */}
-                        <div className={`fixed inset-y-0 right-0 w-[520px] bg-white/90 backdrop-blur-2xl z-[150] transform transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col ${showEditModal ? 'translate-x-0 shadow-[-40px_0_80px_rgba(0,0,0,0.08)] border-l border-white/20' : 'translate-x-[110%] shadow-none border-none invisible pointer-events-none'}`}>
+                        <div className={`fixed inset-y-4 right-4 w-[540px] bg-white/80 backdrop-blur-3xl z-[150] transform transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col rounded-[48px] border border-white/40 shadow-[-40px_0_100px_rgba(0,0,0,0.1)] ${showEditModal ? 'translate-x-0' : 'translate-x-[120%] invisible pointer-events-none'}`}>
                             {selectedItem && (
                                 <>
                                     {/* Drawer Header */}
@@ -818,189 +817,186 @@ const ProjectDetail = () => {
                                     </div>
 
                                     {/* Drawer Content */}
-                                    <div className="flex-1 overflow-y-auto custom-scrollbar p-12 space-y-12">
-                                        {/* Title Section */}
-                                        <div className="space-y-8">
-                                            <div className="relative group">
-                                                <input
-                                                    type="text"
-                                                    className="w-full bg-transparent text-5xl font-black text-gray-900 border-none outline-none placeholder:text-gray-100 p-0 focus:ring-0 leading-tight tracking-tight transition-all"
-                                                    placeholder="Untitled"
-                                                    value={editItemData.title}
-                                                    onChange={(e) => setEditItemData({ ...editItemData, title: e.target.value })}
-                                                />
-                                                <div className="absolute -bottom-2 left-0 w-0 h-1 bg-indigo-500 transition-all duration-500 group-focus-within:w-20 rounded-full opacity-50"></div>
+                                    <div className={`flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6`}>
+                                        {/* Main Card */}
+                                        <div className="bg-white/50 backdrop-blur-sm rounded-[40px] p-10 border border-white/60 shadow-sm space-y-10">
+                                            {/* Title Section */}
+                                            <div className="space-y-8">
+                                                <div className="relative group">
+                                                    <input
+                                                        type="text"
+                                                        className="w-full bg-transparent text-5xl font-black text-gray-900 border-none outline-none placeholder:text-gray-100 p-0 focus:ring-0 leading-tight tracking-tight transition-all"
+                                                        placeholder="Untitled"
+                                                        value={editItemData.title}
+                                                        onChange={(e) => setEditItemData({ ...editItemData, title: e.target.value })}
+                                                    />
+                                                    <div className="absolute -bottom-2 left-0 w-0 h-1 bg-indigo-500 transition-all duration-500 group-focus-within:w-20 rounded-full opacity-50"></div>
+                                                </div>
+
+                                                {selectedItem.type === 'task' && (
+                                                    <div className="flex items-center gap-8 pt-6 border-t border-gray-100/50">
+                                                        {/* Status Custom Dropdown */}
+                                                        <div className="flex flex-col gap-3 flex-1 relative">
+                                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Status</label>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === 'status' ? null : 'status'); }}
+                                                                className={`flex items-center justify-between bg-white/50 border border-gray-100/50 rounded-2xl px-5 py-4 text-sm font-bold transition-all hover:bg-white hover:border-gray-200 hover:shadow-sm group/btn ${editItemData.status === 'done' ? 'text-green-600' : editItemData.status === 'in-progress' ? 'text-indigo-600' : 'text-gray-700'}`}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${editItemData.status === 'done' ? 'bg-green-500' : editItemData.status === 'in-progress' ? 'bg-indigo-500' : 'bg-gray-400'}`}></div>
+                                                                    <span className="capitalize">{editItemData.status.replace('-', ' ')}</span>
+                                                                </div>
+                                                                <svg className={`w-4 h-4 text-gray-300 transition-all duration-300 group-hover/btn:text-gray-600 ${openDropdown === 'status' ? 'rotate-180 text-gray-900' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+                                                            </button>
+
+                                                            {openDropdown === 'status' && (
+                                                                <div className="absolute top-full left-0 right-0 mt-3 bg-white/90 backdrop-blur-2xl border border-white/50 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-20 py-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                                    {['todo', 'in-progress', 'done'].map(s => (
+                                                                        <button
+                                                                            key={s}
+                                                                            onClick={() => { setEditItemData({ ...editItemData, status: s }); setOpenDropdown(null); }}
+                                                                            className="w-full text-left px-5 py-3.5 hover:bg-indigo-50/50 text-sm font-bold text-gray-700 flex items-center gap-4 transition-all"
+                                                                        >
+                                                                            <div className={`w-2 h-2 rounded-full ${s === 'done' ? 'bg-green-500' : s === 'in-progress' ? 'bg-indigo-500' : 'bg-gray-400'}`}></div>
+                                                                            <span className="capitalize">{s.replace('-', ' ')}</span>
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Priority Custom Dropdown */}
+                                                        <div className="flex flex-col gap-3 flex-1 relative">
+                                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Priority</label>
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === 'priority' ? null : 'priority'); }}
+                                                                className={`flex items-center justify-between bg-white/50 border border-gray-100/50 rounded-2xl px-5 py-4 text-sm font-bold transition-all hover:bg-white hover:border-gray-200 hover:shadow-sm group/btn ${editItemData.priority === 'high' ? 'text-red-500' : editItemData.priority === 'medium' ? 'text-amber-600' : 'text-emerald-600'}`}
+                                                            >
+                                                                <div className="flex items-center gap-3">
+                                                                    <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${editItemData.priority === 'high' ? 'bg-red-500' : editItemData.priority === 'medium' ? 'bg-amber-400' : 'bg-emerald-500'}`}></div>
+                                                                    <span className="capitalize">{editItemData.priority}</span>
+                                                                </div>
+                                                                <svg className={`w-4 h-4 text-gray-300 transition-all duration-300 group-hover/btn:text-gray-600 ${openDropdown === 'priority' ? 'rotate-180 text-gray-900' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+                                                            </button>
+
+                                                            {openDropdown === 'priority' && (
+                                                                <div className="absolute top-full left-0 right-0 mt-3 bg-white/90 backdrop-blur-2xl border border-white/50 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-20 py-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                                    {['low', 'medium', 'high'].map(p => (
+                                                                        <button
+                                                                            key={p}
+                                                                            onClick={() => { setEditItemData({ ...editItemData, priority: p }); setOpenDropdown(null); }}
+                                                                            className="w-full text-left px-5 py-3.5 hover:bg-indigo-50/50 text-sm font-bold text-gray-700 flex items-center gap-4 transition-all"
+                                                                        >
+                                                                            <div className={`w-2 h-2 rounded-full ${p === 'high' ? 'bg-red-500' : p === 'medium' ? 'bg-amber-400' : 'bg-emerald-500'}`}></div>
+                                                                            <span className="capitalize">{p}</span>
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                )}
                                             </div>
+                                        </div>
 
-                                            {selectedItem.type === 'task' && (
-                                                <div className="flex items-center gap-8 pt-6 border-t border-gray-100/50">
-                                                    {/* Status Custom Dropdown */}
-                                                    <div className="flex flex-col gap-3 flex-1 relative">
-                                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Status</label>
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === 'status' ? null : 'status'); }}
-                                                            className={`flex items-center justify-between bg-white/50 border border-gray-100/50 rounded-2xl px-5 py-4 text-sm font-bold transition-all hover:bg-white hover:border-gray-200 hover:shadow-sm group/btn ${editItemData.status === 'done' ? 'text-green-600' : editItemData.status === 'in-progress' ? 'text-indigo-600' : 'text-gray-700'}`}
-                                                        >
-                                                            <div className="flex items-center gap-3">
-                                                                <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${editItemData.status === 'done' ? 'bg-green-500' : editItemData.status === 'in-progress' ? 'bg-indigo-500' : 'bg-gray-400'}`}></div>
-                                                                <span className="capitalize">{editItemData.status.replace('-', ' ')}</span>
-                                                            </div>
-                                                            <svg className={`w-4 h-4 text-gray-300 transition-all duration-300 group-hover/btn:text-gray-600 ${openDropdown === 'status' ? 'rotate-180 text-gray-900' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
-                                                        </button>
+                                        {/* Workspace Card */}
+                                        <div className="bg-white/30 backdrop-blur-md rounded-[40px] p-10 border border-white/40 shadow-sm min-h-[400px]">
+                                            {/* Description Canvas */}
+                                            {selectedItem.type !== 'list' && (
+                                                <div className="space-y-4 bg-gray-50/30 p-8 rounded-[32px] border border-gray-100/50">
+                                                    <div className="flex items-center gap-3 text-gray-400 mb-2">
+                                                        <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-50">
+                                                            <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h7" /></svg>
+                                                        </div>
+                                                        <span className="text-[11px] font-black uppercase tracking-[0.2em]">Description</span>
+                                                    </div>
+                                                    <textarea
+                                                        className="w-full bg-transparent border-none outline-none text-gray-600 leading-relaxed min-h-[120px] resize-none p-0 focus:ring-0 text-lg placeholder:text-gray-200"
+                                                        placeholder="Add a detailed description..."
+                                                        value={editItemData.description}
+                                                        onChange={(e) => setEditItemData({ ...editItemData, description: e.target.value })}
+                                                    />
+                                                </div>
+                                            )}
 
-                                                        {openDropdown === 'status' && (
-                                                            <div className="absolute top-full left-0 right-0 mt-3 bg-white/90 backdrop-blur-2xl border border-white/50 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-20 py-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                                {['todo', 'in-progress', 'done'].map(s => (
-                                                                    <button
-                                                                        key={s}
-                                                                        onClick={() => { setEditItemData({ ...editItemData, status: s }); setOpenDropdown(null); }}
-                                                                        className="w-full text-left px-5 py-3.5 hover:bg-indigo-50/50 text-sm font-bold text-gray-700 flex items-center gap-4 transition-all"
-                                                                    >
-                                                                        <div className={`w-2 h-2 rounded-full ${s === 'done' ? 'bg-green-500' : s === 'in-progress' ? 'bg-indigo-500' : 'bg-gray-400'}`}></div>
-                                                                        <span className="capitalize">{s.replace('-', ' ')}</span>
-                                                                    </button>
-                                                                ))}
+                                            {/* Workspace / Page Content */}
+                                            {selectedItem.type === 'list' && (
+                                                <div className="space-y-8 pt-4">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-3 text-violet-500">
+                                                            <div className="p-2 bg-violet-50 rounded-xl">
+                                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
                                                             </div>
-                                                        )}
+                                                            <span className="text-[11px] font-black uppercase tracking-[0.2em]">Checklist</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
+                                                            <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse"></div>
+                                                            <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest">Enter to add</span>
+                                                        </div>
                                                     </div>
 
-                                                    {/* Priority Custom Dropdown */}
-                                                    <div className="flex flex-col gap-3 flex-1 relative">
-                                                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Priority</label>
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === 'priority' ? null : 'priority'); }}
-                                                            className={`flex items-center justify-between bg-white/50 border border-gray-100/50 rounded-2xl px-5 py-4 text-sm font-bold transition-all hover:bg-white hover:border-gray-200 hover:shadow-sm group/btn ${editItemData.priority === 'high' ? 'text-red-500' : editItemData.priority === 'medium' ? 'text-amber-600' : 'text-emerald-600'}`}
-                                                        >
-                                                            <div className="flex items-center gap-3">
-                                                                <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${editItemData.priority === 'high' ? 'bg-red-500' : editItemData.priority === 'medium' ? 'bg-amber-400' : 'bg-emerald-500'}`}></div>
-                                                                <span className="capitalize">{editItemData.priority}</span>
+                                                    <div className="space-y-1">
+                                                        {getChecklist().map((item, idx) => (
+                                                            <div key={item.id} className="flex items-center gap-3 group/check">
+                                                                <button
+                                                                    onClick={() => {
+                                                                        const newList = getChecklist();
+                                                                        newList[idx].checked = !newList[idx].checked;
+                                                                        updateChecklist(newList);
+                                                                    }}
+                                                                    className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${item.checked ? 'bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-100' : 'border-gray-100 group-hover/check:border-indigo-200'}`}
+                                                                >
+                                                                    {item.checked && (
+                                                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" /></svg>
+                                                                    )}
+                                                                </button>
+                                                                <input
+                                                                    type="text"
+                                                                    className={`checklist-input flex-1 bg-transparent border-none outline-none text-sm transition-all p-0 focus:ring-0 ${item.checked ? 'text-gray-300 line-through' : 'text-gray-700 font-medium'}`}
+                                                                    placeholder="Type an item..."
+                                                                    value={item.text}
+                                                                    onChange={(e) => {
+                                                                        const newList = getChecklist();
+                                                                        newList[idx].text = e.target.value;
+                                                                        updateChecklist(newList);
+                                                                    }}
+                                                                    onKeyDown={(e) => handleChecklistKey(e, idx)}
+                                                                    autoFocus={idx === getChecklist().length - 1 && item.text === ''}
+                                                                />
+                                                                <button
+                                                                    onClick={() => {
+                                                                        if (getChecklist().length > 1) {
+                                                                            const newList = getChecklist();
+                                                                            newList.splice(idx, 1);
+                                                                            updateChecklist(newList);
+                                                                        }
+                                                                    }}
+                                                                    className="opacity-0 group-hover/check:opacity-100 p-1.5 text-gray-300 hover:text-red-400 transition-all"
+                                                                >
+                                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                                </button>
                                                             </div>
-                                                            <svg className={`w-4 h-4 text-gray-300 transition-all duration-300 group-hover/btn:text-gray-600 ${openDropdown === 'priority' ? 'rotate-180 text-gray-900' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
-                                                        </button>
-
-                                                        {openDropdown === 'priority' && (
-                                                            <div className="absolute top-full left-0 right-0 mt-3 bg-white/90 backdrop-blur-2xl border border-white/50 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-20 py-3 animate-in fade-in slide-in-from-top-2 duration-300">
-                                                                {['low', 'medium', 'high'].map(p => (
-                                                                    <button
-                                                                        key={p}
-                                                                        onClick={() => { setEditItemData({ ...editItemData, priority: p }); setOpenDropdown(null); }}
-                                                                        className="w-full text-left px-5 py-3.5 hover:bg-indigo-50/50 text-sm font-bold text-gray-700 flex items-center gap-4 transition-all"
-                                                                    >
-                                                                        <div className={`w-2 h-2 rounded-full ${p === 'high' ? 'bg-red-500' : p === 'medium' ? 'bg-amber-400' : 'bg-emerald-500'}`}></div>
-                                                                        <span className="capitalize">{p}</span>
-                                                                    </button>
-                                                                ))}
-                                                            </div>
-                                                        )}
+                                                        ))}
                                                     </div>
                                                 </div>
                                             )}
-                                        </div>
 
-                                        {/* Content Divider */}
-                                        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-gray-100 to-transparent my-4"></div>
-
-                                        {/* Description Canvas */}
-                                        {selectedItem.type !== 'list' && (
-                                            <div className="space-y-4 bg-gray-50/30 p-8 rounded-[32px] border border-gray-100/50">
-                                                <div className="flex items-center gap-3 text-gray-400 mb-2">
-                                                    <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-50">
-                                                        <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h7" /></svg>
-                                                    </div>
-                                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">Description</span>
-                                                </div>
-                                                <textarea
-                                                    className="w-full bg-transparent border-none outline-none text-gray-600 leading-relaxed min-h-[120px] resize-none p-0 focus:ring-0 text-lg placeholder:text-gray-200"
-                                                    placeholder="Add a detailed description..."
-                                                    value={editItemData.description}
-                                                    onChange={(e) => setEditItemData({ ...editItemData, description: e.target.value })}
-                                                />
-                                            </div>
-                                        )}
-
-                                        {/* Workspace / Page Content */}
-                                        {selectedItem.type === 'list' && (
-                                            <div className="space-y-8 pt-4">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-3 text-violet-500">
-                                                        <div className="p-2 bg-violet-50 rounded-xl">
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                                            {selectedItem.type === 'page' && (
+                                                <div className="space-y-8">
+                                                    <div className="flex items-center justify-between">
+                                                        <div className="flex items-center gap-3 text-indigo-500/40">
+                                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] ml-1">Composition Canvas</span>
                                                         </div>
-                                                        <span className="text-[11px] font-black uppercase tracking-[0.2em]">Checklist</span>
                                                     </div>
-                                                    <div className="flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
-                                                        <div className="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse"></div>
-                                                        <span className="text-[9px] text-gray-400 font-black uppercase tracking-widest">Enter to add</span>
-                                                    </div>
-                                                </div>
-
-                                                <div className="space-y-1">
-                                                    {getChecklist().map((item, idx) => (
-                                                        <div key={item.id} className="flex items-center gap-3 group/check">
-                                                            <button
-                                                                onClick={() => {
-                                                                    const newList = getChecklist();
-                                                                    newList[idx].checked = !newList[idx].checked;
-                                                                    updateChecklist(newList);
-                                                                }}
-                                                                className={`w-5 h-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all ${item.checked ? 'bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-100' : 'border-gray-100 group-hover/check:border-indigo-200'}`}
-                                                            >
-                                                                {item.checked && (
-                                                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" /></svg>
-                                                                )}
-                                                            </button>
-                                                            <input
-                                                                type="text"
-                                                                className={`checklist-input flex-1 bg-transparent border-none outline-none text-sm transition-all p-0 focus:ring-0 ${item.checked ? 'text-gray-300 line-through' : 'text-gray-700 font-medium'}`}
-                                                                placeholder="Type an item..."
-                                                                value={item.text}
-                                                                onChange={(e) => {
-                                                                    const newList = getChecklist();
-                                                                    newList[idx].text = e.target.value;
-                                                                    updateChecklist(newList);
-                                                                }}
-                                                                onKeyDown={(e) => handleChecklistKey(e, idx)}
-                                                                autoFocus={idx === getChecklist().length - 1 && item.text === ''}
-                                                            />
-                                                            <button
-                                                                onClick={() => {
-                                                                    if (getChecklist().length > 1) {
-                                                                        const newList = getChecklist();
-                                                                        newList.splice(idx, 1);
-                                                                        updateChecklist(newList);
-                                                                    }
-                                                                }}
-                                                                className="opacity-0 group-hover/check:opacity-100 p-1.5 text-gray-300 hover:text-red-400 transition-all"
-                                                            >
-                                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                                            </button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-
-                                        {selectedItem.type === 'page' && (
-                                            <div className="space-y-8 pt-4">
-                                                <div className="flex items-center justify-between">
-                                                    <div className="flex items-center gap-3 text-indigo-500">
-                                                        <div className="p-2 bg-indigo-50 rounded-xl">
-                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                                                        </div>
-                                                        <span className="text-[11px] font-black uppercase tracking-[0.2em]">Page Canvas</span>
-                                                    </div>
-                                                </div>
-                                                <div className="relative group/canvas">
-                                                    <div className="absolute -inset-1 bg-gradient-to-tr from-indigo-500/10 to-violet-500/10 rounded-[40px] blur-xl opacity-0 group-focus-within/canvas:opacity-100 transition-opacity duration-700"></div>
                                                     <textarea
-                                                        className="relative w-full bg-white/50 backdrop-blur-sm rounded-[40px] p-12 border border-white outline-none text-gray-800 leading-relaxed min-h-[600px] font-serif text-xl focus:bg-white focus:ring-4 focus:ring-indigo-500/5 transition-all shadow-sm hover:shadow-md"
-                                                        placeholder="Begin your creative journey here..."
+                                                        className="w-full bg-transparent outline-none text-gray-800 leading-relaxed min-h-[600px] text-2xl focus:ring-0 transition-all scrollbar-hide resize-none p-0"
+                                                        placeholder="Write your story here..."
                                                         value={editItemData.content}
                                                         onChange={(e) => setEditItemData({ ...editItemData, content: e.target.value })}
                                                     />
                                                 </div>
-                                            </div>
-                                        )}
+                                            )}
+                                        </div>
                                     </div>
 
                                     {/* Drawer Footer */}
@@ -1029,14 +1025,12 @@ const ProjectDetail = () => {
                         </div>
 
                         {/* Overlay */}
-                        {
-                            showEditModal && (
-                                <div
-                                    onClick={() => setShowEditModal(false)}
-                                    className="fixed inset-0 bg-gray-900/10 backdrop-blur-[2px] z-[140] animate-in fade-in duration-500"
-                                />
-                            )
-                        }
+                        {showEditModal && (
+                            <div
+                                onClick={() => setShowEditModal(false)}
+                                className="fixed inset-0 bg-gray-900/10 backdrop-blur-[2px] z-[140] animate-in fade-in duration-500"
+                            />
+                        )}
                     </div>
                 </div>
             </div>

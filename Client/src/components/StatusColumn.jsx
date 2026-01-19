@@ -15,7 +15,7 @@ const StatusColumn = ({ status, items, onTaskClick, onQuickStatusUpdate }) => {
     return (
         <div className="space-y-4">
             <div className="flex items-center justify-between px-2">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-gray-400">
+                <h3 className="text-sm font-black uppercase tracking-widest text-gray-700">
                     {status.replace('-', ' ')}
                 </h3>
                 <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md text-[10px] font-bold">
