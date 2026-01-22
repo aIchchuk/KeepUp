@@ -147,6 +147,7 @@
     height: 20px;
     opacity: 0.7;
     transition: opacity var(--transition-fast);
+    filter: brightness(0) invert(1);
 }
 
 .nav-item:hover .nav-icon,

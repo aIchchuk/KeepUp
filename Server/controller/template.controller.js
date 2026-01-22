@@ -71,3 +71,72 @@ export const publishTemplate = async (req, res) => {
         res.status(500).json({ message: "Failed to publish template", error: err.message });
     }
 };
+
+// Update Template
+export const updateTemplate = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, description, price } = req.body;
+
+        // 1. Find template
+        const template = await Template.findById(id);
+        if (!template) return res.status(404).json({ message: "Template not found" });
+
+        // 2. Verify ownership
+        if (template.author.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Only the author can update this template" });
+        }
+
+        // 3. Update fields
+        if (title !== undefined) template.title = title;
+        if (description !== undefined) template.description = description;
+        if (price !== undefined) template.price = Number(price);
+
+        await template.save();
+
+        // 4. Log activity
+        await Activity.create({
+            user: req.user._id,
+            actionType: "template_update",
+            metadata: { templateId: template._id },
+            ipAddress: req.ip
+        });
+
+        res.json(template);
+    } catch (err) {
+        console.error("Update Error:", err);
+        res.status(500).json({ message: "Failed to update template", error: err.message });
+    }
+};
+
+// Delete Template
+export const deleteTemplate = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // 1. Find template
+        const template = await Template.findById(id);
+        if (!template) return res.status(404).json({ message: "Template not found" });
+
+        // 2. Verify ownership
+        if (template.author.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Only the author can delete this template" });
+        }
+
+        // 3. Delete template
+        await Template.findByIdAndDelete(id);
+
+        // 4. Log activity
+        await Activity.create({
+            user: req.user._id,
+            actionType: "template_delete",
+            metadata: { templateId: id, templateTitle: template.title },
+            ipAddress: req.ip
+        });
+
+        res.json({ message: "Template deleted successfully" });
+    } catch (err) {
+        console.error("Delete Error:", err);
+        res.status(500).json({ message: "Failed to delete template", error: err.message });
+    }
+};

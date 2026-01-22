@@ -12,35 +12,23 @@ import projectRoutes from "./routes/project.routes.js";
 import taskRoutes from "./routes/task.routes.js";
 import templateRoutes from "./routes/template.routes.js";
 import activityRoutes from "./routes/activity.routes.js";
+import paymentRoutes from "./routes/payment.routes.js";
 
 dotenv.config();
 const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
-    credentials: true
-}));
-app.use(helmet({
-    crossOriginResourcePolicy: { policy: "cross-origin" }
-}));
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.use(helmet());
 
-// Simple Request Logger
-app.use((req, reqRes, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-    next();
-});
-
-
-// Rate Limiting
+// Rate limiting for login endpoint
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 100, // Loosened for development
-    message: { message: "Too many login attempts, please try again after 15 minutes" }
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 login requests per windowMs
+    message: "Too many login attempts, please try again after 15 minutes"
 });
-
-
 
 // Routes
 app.use("/api/users/login", loginLimiter); // Apply only to login for better UX
@@ -50,6 +38,7 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/projects/:id/tasks", taskRoutes);
 app.use("/api/templates", templateRoutes);
 app.use("/api/logs", activityRoutes);
+app.use("/api/payment", paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
 

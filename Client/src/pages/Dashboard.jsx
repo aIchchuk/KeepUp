@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import api from '../api/api';
+import Card from '../components/ui/Card';
+import Button from '../components/ui/Button';
+import Modal from '../components/ui/Modal';
+import Input from '../components/ui/Input';
+import '../styles/Dashboard.css';
 
 const Dashboard = () => {
     const { user } = useAuth();
@@ -38,113 +43,109 @@ const Dashboard = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-12 space-y-12">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900">My Workspace</h1>
-                    <p className="text-gray-500 mt-1">Manage your projects and stay on track.</p>
+        <div className="dashboard-container">
+            <div className="dashboard-header">
+                <div className="dashboard-title">
+                    <h1>My Workspace</h1>
+                    <p>Manage your projects and stay on track.</p>
                 </div>
-                <button
+                <Button
+                    variant="primary"
                     onClick={() => setShowCreateModal(true)}
-                    className="bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
                 >
-                    <span>+</span> New Project
-                </button>
+                    + New Project
+                </Button>
             </div>
 
             {loading ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="dashboard-grid">
                     {[1, 2, 3].map(i => (
-                        <div key={i} className="h-48 bg-gray-100 rounded-[32px] animate-pulse"></div>
+                        <div key={i} className="skeleton"></div>
                     ))}
                 </div>
             ) : projects.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="dashboard-grid">
                     {projects.map(project => (
                         <Link
                             key={project._id}
                             to={`/projects/${project._id}`}
-                            className="group bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                            style={{ textDecoration: 'none' }}
                         >
-                            <div className="space-y-6">
-                                <div className="w-16 h-16 bg-white border border-gray-100 rounded-2xl flex items-center justify-center text-3xl shadow-sm group-hover:scale-110 transition-transform">
-                                    {project.icon || '🚀'}
-                                </div>
+                            <Card className="project-card hover-glow">
                                 <div>
-                                    <h3 className="text-xl font-bold text-gray-900">{project.title}</h3>
-                                    <p className="text-gray-500 mt-2 line-clamp-2 text-sm leading-relaxed">
+                                    <div className="project-icon-wrapper">
+                                        {project.icon || '🚀'}
+                                    </div>
+                                    <h3 className="project-title">{project.title}</h3>
+                                    <p className="project-desc">
                                         {project.description || 'No description provided.'}
                                     </p>
                                 </div>
-                                <div className="pt-4 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-gray-400">
+                                <div className="project-footer">
                                     <span>
                                         By {project.owner?._id === user?.id || project.owner === user?.id ? 'You' : project.owner?.name || 'Unknown'}
                                     </span>
-                                    <span className="text-indigo-600">Open Project →</span>
+                                    <span className="project-link-text">Open Project →</span>
                                 </div>
-                            </div>
+                            </Card>
                         </Link>
                     ))}
                 </div>
             ) : (
-                <div className="bg-white border-2 border-dashed border-gray-100 rounded-[40px] p-20 text-center space-y-4">
-                    <div className="text-6xl text-gray-200">✨</div>
-                    <h3 className="text-xl font-bold text-gray-900">Your workspace is empty</h3>
-                    <p className="text-gray-500 max-w-xs mx-auto">Create your first project to start organizing your work and achieve your goals.</p>
-                    <button
-                        onClick={() => setShowCreateModal(true)}
-                        className="text-indigo-600 font-bold hover:underline mt-4 block mx-auto"
-                    >
+                <div className="empty-state">
+                    <div className="empty-icon">✨</div>
+                    <h3 className="title-small">Your workspace is empty</h3>
+                    <p className="empty-text">Create your first project to start organizing your work and achieve your goals.</p>
+                    <Button variant="ghost" onClick={() => setShowCreateModal(true)}>
                         Create a Project
-                    </button>
+                    </Button>
                 </div>
             )}
 
             {/* Create Project Modal */}
-            {showCreateModal && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-gray-900/40 backdrop-blur-sm">
-                    <div className="bg-white w-full max-w-md rounded-[40px] p-10 shadow-2xl animate-in fade-in zoom-in duration-300">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">Create New Project</h2>
-                        <form onSubmit={handleCreateProject} className="space-y-6">
-                            <div className="space-y-1">
-                                <label className="text-sm font-semibold text-gray-700 ml-1">Project Title</label>
-                                <input
-                                    type="text"
-                                    required
-                                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
-                                    placeholder="Software Launch 2026"
-                                    value={newProject.title}
-                                    onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <label className="text-sm font-semibold text-gray-700 ml-1">Description (Optional)</label>
-                                <textarea
-                                    className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all resize-none h-32"
-                                    placeholder="High-level goals and timeline..."
-                                    value={newProject.description}
-                                    onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
-                                ></textarea>
-                            </div>
-                            <div className="flex gap-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={() => setShowCreateModal(false)}
-                                    className="flex-1 py-4 bg-gray-50 text-gray-600 rounded-2xl font-bold hover:bg-gray-100 transition-all"
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
-                                >
-                                    Create
-                                </button>
-                            </div>
-                        </form>
+            <Modal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                title="Create New Project"
+                description="Start a new journey."
+            >
+                <form onSubmit={handleCreateProject} className="create-form">
+                    <Input
+                        label="Project Title"
+                        placeholder="Software Launch 2026"
+                        required
+                        value={newProject.title}
+                        onChange={(e) => setNewProject({ ...newProject, title: e.target.value })}
+                    />
+                    <div className="ui-input-wrapper">
+                        <label className="ui-label">Description (Optional)</label>
+                        <textarea
+                            className="ui-input"
+                            style={{ minHeight: '120px', resize: 'vertical' }}
+                            placeholder="High-level goals and timeline..."
+                            value={newProject.description}
+                            onChange={(e) => setNewProject({ ...newProject, description: e.target.value })}
+                        ></textarea>
                     </div>
-                </div>
-            )}
+                    <div className="form-actions">
+                        <Button
+                            variant="secondary"
+                            type="button"
+                            onClick={() => setShowCreateModal(false)}
+                            style={{ flex: 1 }}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            style={{ flex: 1 }}
+                        >
+                            Create Protocol
+                        </Button>
+                    </div>
+                </form>
+            </Modal>
         </div>
     );
 };

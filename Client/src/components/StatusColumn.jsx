@@ -2,6 +2,7 @@ import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import TaskCard from './TaskCard';
+import '../styles/ProjectDetail.css';
 
 const StatusColumn = ({ status, items, onTaskClick, onQuickStatusUpdate }) => {
     const { setNodeRef, isOver } = useDroppable({
@@ -13,20 +14,21 @@ const StatusColumn = ({ status, items, onTaskClick, onQuickStatusUpdate }) => {
     });
 
     return (
-        <div className="space-y-4">
-            <div className="flex items-center justify-between px-2">
-                <h3 className="text-sm font-black uppercase tracking-widest text-gray-700">
+        <div
+            ref={setNodeRef}
+            className={`status-column ${isOver ? 'is-over' : ''}`}
+        >
+            <div className="column-header">
+                <h3 className="status-title">
+                    <div className={`status-dot ${status}`}></div>
                     {status.replace('-', ' ')}
                 </h3>
-                <span className="bg-gray-100 text-gray-500 px-2 py-0.5 rounded-md text-[10px] font-bold">
+                <span className="status-count">
                     {items.length}
                 </span>
             </div>
 
-            <div
-                ref={setNodeRef}
-                className={`space-y-4 p-2 rounded-[32px] transition-all duration-300 ${isOver ? 'bg-indigo-50/50 ring-2 ring-indigo-200 ring-dashed' : 'bg-transparent'}`}
-            >
+            <div className="status-items-container" style={{ minHeight: '200px' }}>
                 <SortableContext
                     items={items.map(i => i._id)}
                     strategy={verticalListSortingStrategy}

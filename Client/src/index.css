@@ -1,8 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
 @import './styles/variables.css';
 @import './styles/global.css';
-
-/* 
-  Legacy Tailwind directives would go here if we were keeping them.
-  We are fully switching to Vanilla CSS. 
-  Existing Tailwind classes will simply cease to function until replaced in JSX.
-*/

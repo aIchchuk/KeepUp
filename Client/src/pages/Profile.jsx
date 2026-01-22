@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
+import Button from '../components/ui/Button';
+import Input from '../components/ui/Input';
+import api from '../api/api';
+import '../styles/Profile.css';
 
 const Profile = () => {
-    const { user, toggleMfa } = useAuth();
+    const { user, toggleMfa, updateUser } = useAuth();
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
+    const [isEditing, setIsEditing] = useState(false);
+    const [editName, setEditName] = useState(user?.name || '');
+    const fileInputRef = useRef(null);
 
     const handleToggleMfa = async () => {
         setLoading(true);
@@ -19,78 +26,162 @@ const Profile = () => {
         }
     };
 
-    if (!user) return <div className="text-center py-20">Please log in to view your profile.</div>;
+    const handleImageClick = () => {
+        fileInputRef.current.click();
+    };
+
+    const handleImageChange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const res = await api.post('/users/profile/image', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            // Update user with new profile picture
+            const updatedUser = { ...user, profilePicture: res.data.profilePicture };
+            updateUser(updatedUser);
+            setMessage('Profile image updated successfully');
+        } catch (err) {
+            console.error(err);
+            setMessage('Failed to upload image');
+        }
+    };
+
+    const handleUpdateProfile = async () => {
+        if (!editName.trim()) return;
+        setLoading(true);
+        try {
+            const res = await api.patch('/users/profile', { name: editName });
+            updateUser(res.data);
+            setIsEditing(false);
+            setMessage('Profile updated successfully');
+        } catch (err) {
+            console.error(err);
+            setMessage('Failed to update profile');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Construct image URL (assuming server is on localhost:5000 for dev)
+    const getImageUrl = (path) => {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        // Simple heuristic for dev environment
+        return `http://localhost:5000/${path}`;
+    };
+
+    if (!user) return <div style={{ textAlign: 'center', padding: '100px' }}>Please log in to view your profile.</div>;
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-12">
-            <div className="bg-white rounded-[32px] border border-gray-100 shadow-xl p-8 md:p-12 space-y-12">
+        <div className="profile-container">
+            <div className="profile-card">
                 {/* Header */}
-                <div className="flex items-center gap-6">
-                    <div className="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-4xl text-indigo-700 font-bold uppercase">
-                        {user.name.charAt(0)}
+                <div className="profile-header">
+                    <div className="profile-image-upload" onClick={handleImageClick}>
+                        <div className="profile-avatar overflow-hidden">
+                            {user.profilePicture ? (
+                                <img src={getImageUrl(user.profilePicture)} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                user.name.charAt(0)
+                            )}
+                        </div>
+                        <div className="upload-overlay">
+                            <svg className="camera-icon" width="24" height="24" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                        </div>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleImageChange}
+                            style={{ display: 'none' }}
+                            accept="image/*"
+                        />
                     </div>
-                    <div className="space-y-1">
-                        <h1 className="text-3xl font-bold text-gray-900">{user.name}</h1>
-                        <p className="text-gray-500">{user.email}</p>
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 capitalize">
+
+                    <div className="profile-info" style={{ flex: 1 }}>
+                        {isEditing ? (
+                            <div style={{ display: 'flex', gap: '10px', alignItems: 'center', marginBottom: '10px' }}>
+                                <Input
+                                    value={editName}
+                                    onChange={(e) => setEditName(e.target.value)}
+                                    placeholder="Enter your name"
+                                    autoFocus
+                                />
+                                <Button onClick={handleUpdateProfile} disabled={loading} size="sm">Save</Button>
+                                <Button variant="secondary" onClick={() => { setIsEditing(false); setEditName(user.name); }} size="sm">Cancel</Button>
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                <h1>{user.name}</h1>
+                                <button
+                                    onClick={() => setIsEditing(true)}
+                                    className="p-2 transition-colors"
+                                    title="Edit Name"
+                                    style={{ color: 'white' }}
+                                >
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                </button>
+                            </div>
+                        )}
+                        <p className="profile-email">{user.email}</p>
+                        <span className="profile-role">
                             {user.role}
                         </span>
                     </div>
                 </div>
 
                 {/* Security Section */}
-                <div className="space-y-6 pt-6 border-t border-gray-100">
-                    <div className="space-y-1">
-                        <h2 className="text-xl font-bold text-gray-900">Security Settings</h2>
-                        <p className="text-gray-500 text-sm">Manage your account protection and security boosters.</p>
+                <div className="profile-section">
+                    <div style={{ marginBottom: '24px' }}>
+                        <h2 className="section-title">Security Settings</h2>
+                        <p className="section-desc">Manage your account protection and security boosters.</p>
                     </div>
 
-                    <div className="flex items-center justify-between p-6 bg-gray-50 rounded-2xl border border-gray-100">
-                        <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                                <span className="font-bold text-gray-900">Email Multi-Factor Authentication</span>
-                                {user.mfaEnabled ? (
-                                    <span className="px-2 py-0.5 rounded-md bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider">Active</span>
-                                ) : (
-                                    <span className="px-2 py-0.5 rounded-md bg-gray-200 text-gray-600 text-[10px] font-bold uppercase tracking-wider">Inactive</span>
-                                )}
+                    <div className="security-box">
+                        <div style={{ flex: 1 }}>
+                            <div className="security-header">
+                                <span className="security-label">Email Multi-Factor Authentication</span>
+                                <span className={`security-badge ${user.mfaEnabled ? 'active' : 'inactive'}`}>
+                                    {user.mfaEnabled ? 'Active' : 'Inactive'}
+                                </span>
                             </div>
-                            <p className="text-sm text-gray-500 max-w-md">
+                            <p className="security-desc">
                                 Protect your account by requiring a 6-digit code sent to your email whenever you log in.
                             </p>
                         </div>
-                        <button
+                        <Button
+                            variant={user.mfaEnabled ? 'danger' : 'primary'}
                             onClick={handleToggleMfa}
                             disabled={loading}
-                            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${user.mfaEnabled
-                                    ? 'bg-white text-red-600 border border-red-100 hover:bg-red-50'
-                                    : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-lg shadow-indigo-100'
-                                }`}
                         >
                             {loading ? 'Processing...' : user.mfaEnabled ? 'Disable MFA' : 'Enable MFA'}
-                        </button>
+                        </Button>
                     </div>
 
                     {message && (
-                        <div className={`text-sm font-medium px-4 py-2 rounded-lg text-center ${message.includes('success') ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
+                        <div className={`status-message ${message.includes('success') ? 'success' : 'error'}`}>
                             {message}
                         </div>
                     )}
                 </div>
 
                 {/* Account Details */}
-                <div className="space-y-6 pt-6 border-t border-gray-100">
-                    <h2 className="text-xl font-bold text-gray-900">Account Details</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">User ID</label>
-                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm text-gray-600 font-mono overflow-x-auto">
+                <div className="profile-section">
+                    <h2 className="section-title" style={{ marginBottom: '24px' }}>Account Details</h2>
+                    <div className="details-grid">
+                        <div className="detail-item">
+                            <label className="detail-label">User ID</label>
+                            <div className="detail-value">
                                 {user.id || user._id}
                             </div>
                         </div>
-                        <div className="space-y-1">
-                            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Member Since</label>
-                            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 text-sm text-gray-600">
+                        <div className="detail-item">
+                            <label className="detail-label">Member Since</label>
+                            <div className="detail-value">
                                 {new Date(user.createdAt || Date.now()).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                             </div>
                         </div>

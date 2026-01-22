@@ -116,3 +116,52 @@ export const toggleMfa = async (req, res) => {
 export const getProfile = async (req, res) => {
     res.json(req.user);
 };
+
+// Update Profile
+export const updateProfile = async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+
+        if (req.body.name) {
+            user.name = req.body.name;
+        }
+
+        const updatedUser = await user.save();
+
+        res.json({
+            id: updatedUser._id,
+            name: updatedUser.name,
+            email: updatedUser.email,
+            role: updatedUser.role,
+            profilePicture: updatedUser.profilePicture,
+            mfaEnabled: updatedUser.mfaEnabled
+        });
+    } catch (error) {
+        console.error("Update Profile Error:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+// Upload Profile Image
+export const uploadProfileImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const user = await User.findById(req.user._id);
+        // Normalize path for Windows/Unix compatibility and URL usage
+        const imagePath = `public/userImages/${req.file.filename}`;
+
+        user.profilePicture = imagePath;
+        const updatedUser = await user.save();
+
+        res.json({
+            message: "Profile image uploaded",
+            profilePicture: updatedUser.profilePicture
+        });
+    } catch (error) {
+        console.error("Image Upload Error:", error);
+        res.status(500).json({ message: "Server error during image upload" });
+    }
+};

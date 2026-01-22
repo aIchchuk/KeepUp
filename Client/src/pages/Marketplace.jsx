@@ -1,10 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/api';
+import Button from '../components/ui/Button';
+import '../styles/Marketplace.css';
 
 const Marketplace = () => {
+    const { user } = useAuth();
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [purchaseStatus, setPurchaseStatus] = useState({ id: null, type: '', message: '' });
+    const [editingTemplate, setEditingTemplate] = useState(null);
+    const [editForm, setEditForm] = useState({ title: '', description: '', price: 0 });
 
     useEffect(() => {
         fetchTemplates();
@@ -26,71 +32,169 @@ const Marketplace = () => {
         try {
             const res = await api.post('/templates/buy', { templateId });
             setPurchaseStatus({ id: templateId, type: 'success', message: res.data.message });
-            // In a real app, we'd navigate to Stripe or the new project
         } catch (err) {
             setPurchaseStatus({ id: templateId, type: 'error', message: err.response?.data?.message || 'Purchase failed' });
         }
     };
 
-    return (
-        <div className="min-h-screen bg-gray-50/50 p-8">
-            <div className="max-w-7xl mx-auto space-y-12">
-                <div className="text-center space-y-4">
-                    <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Template Marketplace</h1>
-                    <p className="text-gray-500 max-w-2xl mx-auto">
-                        Skip the setup and get straight to work. Discover high-quality templates created by experts.
-                    </p>
-                </div>
+    const handleEditClick = (template) => {
+        setEditingTemplate(template._id);
+        setEditForm({
+            title: template.title,
+            description: template.description,
+            price: template.price
+        });
+    };
 
-                {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[1, 2, 3].map(i => (
-                            <div key={i} className="h-64 bg-gray-100 rounded-[32px] animate-pulse"></div>
-                        ))}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {templates.map(template => (
-                            <div key={template._id} className="bg-white rounded-[40px] border border-gray-100 shadow-sm hover:shadow-2xl transition-all duration-500 overflow-hidden flex flex-col group">
-                                <div className="h-40 bg-gradient-to-br from-indigo-500 to-violet-600 p-8 relative flex items-center justify-center">
-                                    <div className="text-5xl group-hover:scale-125 transition-transform duration-500">💎</div>
-                                    <div className="absolute top-4 right-4 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-bold">
-                                        ${template.price || 0}
-                                    </div>
+    const handleUpdateTemplate = async (templateId) => {
+        try {
+            const res = await api.put(`/templates/${templateId}`, editForm);
+            setTemplates(templates.map(t => t._id === templateId ? res.data : t));
+            setEditingTemplate(null);
+            setPurchaseStatus({ id: templateId, type: 'success', message: 'Template updated successfully!' });
+        } catch (err) {
+            setPurchaseStatus({ id: templateId, type: 'error', message: err.response?.data?.message || 'Update failed' });
+        }
+    };
+
+    const handleDeleteTemplate = async (templateId) => {
+        if (!window.confirm('Are you sure you want to delete this template? This action cannot be undone.')) {
+            return;
+        }
+        try {
+            await api.delete(`/templates/${templateId}`);
+            setTemplates(templates.filter(t => t._id !== templateId));
+            setPurchaseStatus({ id: templateId, type: 'success', message: 'Template deleted successfully!' });
+            setTimeout(() => setPurchaseStatus({ id: null, type: '', message: '' }), 3000);
+        } catch (err) {
+            setPurchaseStatus({ id: templateId, type: 'error', message: err.response?.data?.message || 'Delete failed' });
+        }
+    };
+
+    const isOwner = (template) => {
+        return user && template.author && (template.author._id === user._id || template.author === user._id);
+    };
+
+    return (
+        <div className="marketplace-container">
+            <div className="marketplace-header">
+                <h1>Template Marketplace</h1>
+                <p>
+                    Skip the setup and get straight to work. Discover high-quality templates created by experts.
+                </p>
+            </div>
+
+            {loading ? (
+                <div className="templates-grid">
+                    {[1, 2, 3].map(i => (
+                        <div key={i} className="template-card skeleton" style={{ height: '400px' }}></div>
+                    ))}
+                </div>
+            ) : (
+                <div className="templates-grid">
+                    {templates.map(template => (
+                        <div key={template._id} className="template-card">
+                            <div className="template-preview">
+                                <div className="template-icon">💎</div>
+                                <div className="template-price">
+                                    ${template.price || 0}
                                 </div>
-                                <div className="p-8 flex-1 flex flex-col">
-                                    <h3 className="text-xl font-bold text-gray-900 mb-2">{template.title}</h3>
-                                    <p className="text-gray-500 text-sm leading-relaxed mb-6 flex-1">
-                                        {template.description}
-                                    </p>
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2 text-xs font-semibold text-gray-400">
-                                            <div className="w-5 h-5 rounded-full bg-gray-100"></div>
-                                            By {template.author?.name || 'KeepUp Expert'}
+                                {isOwner(template) && (
+                                    <div className="owner-badge">Your Template</div>
+                                )}
+                            </div>
+                            <div className="template-content">
+                                {editingTemplate === template._id ? (
+                                    <div className="edit-form">
+                                        <input
+                                            type="text"
+                                            value={editForm.title}
+                                            onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                                            placeholder="Template Title"
+                                            className="edit-input"
+                                        />
+                                        <textarea
+                                            value={editForm.description}
+                                            onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                                            placeholder="Description"
+                                            className="edit-textarea"
+                                            rows="3"
+                                        />
+                                        <input
+                                            type="number"
+                                            value={editForm.price}
+                                            onChange={(e) => setEditForm({ ...editForm, price: e.target.value })}
+                                            placeholder="Price"
+                                            className="edit-input"
+                                            min="0"
+                                            step="0.01"
+                                        />
+                                        <div className="edit-actions">
+                                            <Button
+                                                variant="primary"
+                                                onClick={() => handleUpdateTemplate(template._id)}
+                                                style={{ flex: 1 }}
+                                            >
+                                                Save Changes
+                                            </Button>
+                                            <Button
+                                                variant="secondary"
+                                                onClick={() => setEditingTemplate(null)}
+                                                style={{ flex: 1 }}
+                                            >
+                                                Cancel
+                                            </Button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <h3 className="template-title">{template.title}</h3>
+                                        <p className="template-desc">
+                                            {template.description}
+                                        </p>
+
+                                        <div className="template-meta">
+                                            <div className="author-dot"></div>
+                                            <span>By {template.author?.name || 'KeepUp Expert'}</span>
                                         </div>
 
                                         {purchaseStatus.id === template._id && purchaseStatus.type ? (
-                                            <div className={`p-4 rounded-2xl text-sm font-bold text-center ${purchaseStatus.type === 'success' ? 'bg-green-50 text-green-600' :
-                                                    purchaseStatus.type === 'error' ? 'bg-red-50 text-red-600' :
-                                                        'bg-indigo-50 text-indigo-600 animate-pulse'
-                                                }`}>
+                                            <div className={`purchase-status ${purchaseStatus.type}`}>
                                                 {purchaseStatus.message}
                                             </div>
+                                        ) : isOwner(template) ? (
+                                            <div className="owner-actions">
+                                                <Button
+                                                    variant="secondary"
+                                                    onClick={() => handleEditClick(template)}
+                                                    style={{ flex: 1 }}
+                                                >
+                                                    ✏️ Edit
+                                                </Button>
+                                                <Button
+                                                    variant="danger"
+                                                    onClick={() => handleDeleteTemplate(template._id)}
+                                                    style={{ flex: 1 }}
+                                                >
+                                                    🗑️ Delete
+                                                </Button>
+                                            </div>
                                         ) : (
-                                            <button
+                                            <Button
+                                                variant="primary"
                                                 onClick={() => handleBuyTemplate(template._id)}
-                                                className="w-full py-4 bg-gray-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-xl shadow-gray-200"
+                                                style={{ width: '100%' }}
                                             >
                                                 Purchase Template
-                                            </button>
+                                            </Button>
                                         )}
-                                    </div>
-                                </div>
+                                    </>
+                                )}
                             </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 };
