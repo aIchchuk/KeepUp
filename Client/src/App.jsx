@@ -20,7 +20,7 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="antialiased text-gray-900 bg-gray-50 min-h-screen">
+        <div className="app-root">
           <Routes>
             {/* Public Routes with Global Navbar */}
             <Route element={<><Navbar /><Home /></>} path="/" />

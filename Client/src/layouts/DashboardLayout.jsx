@@ -2,14 +2,15 @@ import React from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import Sidebar from '../components/Sidebar';
+import './DashboardLayout.css';
 
 const DashboardLayout = () => {
     const { user, loading } = useAuth();
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+            <div className="loading-screen">
+                <div className="spinner"></div>
             </div>
         );
     }
@@ -19,9 +20,9 @@ const DashboardLayout = () => {
     }
 
     return (
-        <div className="flex min-h-screen bg-[#fafafa]">
+        <div className="dashboard-layout">
             <Sidebar />
-            <main className="flex-1 ml-64 overflow-y-auto">
+            <main className="main-content">
                 <Outlet />
             </main>
         </div>

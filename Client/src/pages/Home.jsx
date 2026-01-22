@@ -2,7 +2,7 @@ import React from 'react';
 
 const Home = () => {
     return (
-        <div className="min-h-screen bg-gray-50 selection:bg-indigo-100 selection:text-indigo-700">
+        <div className="min-h-screen bg-gray-0 selection:bg-indigo-100 selection:text-indigo-700">
             <main className="max-w-7xl mx-auto px-6 pt-20 pb-32">
                 {/* Hero Section */}
                 <div className="text-center space-y-8 max-w-3xl mx-auto">

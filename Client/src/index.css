@@ -1,40 +1,8 @@
-@import "tailwindcss";
+@import './styles/variables.css';
+@import './styles/global.css';
 
-@layer base {
-    html {
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    }
-}
-
-@layer utilities {
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: transparent;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #f1f1f1;
-        border-radius: 10px;
-    }
-
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #e2e8f0;
-    }
-}
-
-@keyframes slide-in-right {
-    from {
-        transform: translateX(100%);
-    }
-
-    to {
-        transform: translateX(0);
-    }
-}
-
-.animate-slide-in {
-    animation: slide-in-right 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
+/* 
+  Legacy Tailwind directives would go here if we were keeping them.
+  We are fully switching to Vanilla CSS. 
+  Existing Tailwind classes will simply cease to function until replaced in JSX.
+*/

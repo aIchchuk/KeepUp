@@ -18,12 +18,14 @@ import {
 } from '@dnd-kit/sortable';
 import StatusColumn from '../components/StatusColumn';
 import TaskCard from '../components/TaskCard';
+import CalendarView from '../components/CalendarView';
 
 const ProjectDetail = () => {
     const { id } = useParams();
     const { user } = useAuth();
     const [project, setProject] = useState(null);
     const [items, setItems] = useState([]);
+    const [viewMode, setViewMode] = useState('board'); // 'board' or 'calendar'
     const [loading, setLoading] = useState(true);
     const [showModal, setShowModal] = useState(false);
     const [showInviteModal, setShowInviteModal] = useState(false);
@@ -55,6 +57,11 @@ const ProjectDetail = () => {
     const [tempCoverUrl, setTempCoverUrl] = useState('');
     const [tempEmoji, setTempEmoji] = useState('');
     const [createOpenDropdown, setCreateOpenDropdown] = useState(null);
+
+    // Publish State
+    const [showPublishModal, setShowPublishModal] = useState(false);
+    const [publishData, setPublishData] = useState({ price: '', description: '' });
+    const [publishStatus, setPublishStatus] = useState({ type: '', message: '' });
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -176,6 +183,7 @@ const ProjectDetail = () => {
             description: item.description || '',
             priority: item.priority || 'medium',
             status: item.status || 'todo',
+            dueDate: item.dueDate ? item.dueDate.split('T')[0] : '',
             content: content
         });
         setShowEditModal(true);
@@ -253,6 +261,30 @@ const ProjectDetail = () => {
         }
     };
 
+    const handlePublishProject = async (e) => {
+        e.preventDefault();
+        setPublishStatus({ type: 'loading', message: 'Publishing template...' });
+
+        try {
+            await api.post('/templates/publish', {
+                projectId: id,
+                title: project.title, // Default to project title, or add input if needed
+                description: publishData.description || project.description,
+                price: publishData.price
+            });
+
+            setPublishStatus({ type: 'success', message: 'Successfully published to Marketplace!' });
+            setTimeout(() => {
+                setShowPublishModal(false);
+                setPublishStatus({ type: '', message: '' });
+                setPublishData({ price: '', description: '' });
+            }, 2000);
+        } catch (err) {
+            console.error('Publish error:', err);
+            setPublishStatus({ type: 'error', message: err.response?.data?.message || 'Failed to publish' });
+        }
+    };
+
     const handleDragStart = (event) => {
         const { active } = event;
         const task = items.find(i => i._id === active.id);
@@ -273,14 +305,13 @@ const ProjectDetail = () => {
                 // Optimistic Update
                 setItems(prev => prev.map(i => i._id === active.id ? { ...i, status: overStatus } : i));
 
-                await api.patch(`/projects/${id}/tasks/${active.id}`, { status: overStatus });
-                fetchProjectData();
             } catch (err) {
                 console.error('Error moving task:', err);
                 fetchProjectData(); // Revert on failure
             }
         }
     };
+
 
     if (loading) return <div className="p-20 text-center animate-pulse text-gray-400 font-bold text-xl">Loading project...</div>;
     if (!project) return <div className="p-20 text-center">Project not found. <Link to="/dashboard" className="text-indigo-600 underline">Back to Dashboard</Link></div>;
@@ -303,14 +334,14 @@ const ProjectDetail = () => {
 
             {/* Scrollable Content */}
             <div className="relative z-10 min-h-screen flex flex-col pt-[9vh]">
-                <div className="max-w-7xl mx-auto px-8 w-full pb-20">
+                <div className="max-w-7xl mx-auto px-15 w-full pb-20">
                     {/* Main Content Box */}
-                    <div className="bg-white/50 backdrop-blur-xl rounded-[48px] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.3)] border border-white/20 p-12 min-h-[610px]">
+                    <div className="bg-white/90 backdrop-blur-xl rounded-[48px] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.3)] border border-white/20 p-12 min-h-[610px]">
                         {/* Header Section */}
                         <div className="mb-12">
                             <div className="flex items-start justify-between gap-10">
                                 <div className="flex-1 space-y-4">
-                                    <h1 className="text-5xl font-black text-gray-900 tracking-tight leading-tight flex items-center gap-7">
+                                    <h1 className="text-4xl font-black text-gray-900 tracking-tight leading-tight flex items-center gap-7">
                                         <div
                                             onClick={openEmojiModal}
                                             className="w-16 h-16 bg-white shadow-[0_20px_40px_-12px_rgba(0,0,0,0.15)] rounded-[22px] flex items-center justify-center text-2xl border-2 border-white flex-shrink-0 transition-all hover:scale-105 cursor-pointer active:scale-95 group ring-1 ring-gray-100/50 outline outline-offset-4 outline-2 outline-white/30"
@@ -324,17 +355,25 @@ const ProjectDetail = () => {
                                     </p>
                                 </div>
                                 <div className="flex items-center gap-4">
+                                    <div className="bg-gray-100 p-1 rounded-xl flex gap-1">
+                                        <button
+                                            onClick={() => setViewMode('board')}
+                                            className={`p-2 rounded-lg transition-all ${viewMode === 'board' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                                        </button>
+                                        <button
+                                            onClick={() => setViewMode('calendar')}
+                                            className={`p-2 rounded-lg transition-all ${viewMode === 'calendar' ? 'bg-white shadow-sm text-indigo-600' : 'text-gray-400 hover:text-gray-600'}`}
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                        </button>
+                                    </div>
                                     <button
-                                        onClick={openCoverModal}
-                                        className="bg-white px-6 py-3 rounded-2xl text-xs font-bold text-gray-900 transition-all hover:bg-gray-50 shadow-lg border border-gray-100"
+                                        onClick={() => setShowPublishModal(true)}
+                                        className="bg-gradient-to-r from-violet-600 to-indigo-600 text-white px-8 py-4 rounded-2xl font-bold hover:shadow-lg hover:scale-105 transition-all shadow-md flex items-center gap-2"
                                     >
-                                        Change Cover
-                                    </button>
-                                    <button
-                                        onClick={() => setShowInviteModal(true)}
-                                        className="bg-white text-gray-900 border border-gray-200 px-8 py-4 rounded-2xl font-bold hover:bg-gray-50 transition-all shadow-md"
-                                    >
-                                        Invite
+                                        <span></span> Publish
                                     </button>
                                     <div className="relative">
                                         <button
@@ -422,6 +461,11 @@ const ProjectDetail = () => {
                                         </button>
                                     </div>
                                 </div>
+                            ) : viewMode === 'calendar' ? (
+                                <CalendarView
+                                    tasks={items.filter(i => i.type === 'task')}
+                                    onTaskClick={openEditModal}
+                                />
                             ) : (
                                 <>
                                     {/* Draggable Task Board - Only show if there are tasks */}
@@ -783,8 +827,77 @@ const ProjectDetail = () => {
                             </div>
                         )}
 
+                        {/* Publish Template Modal */}
+                        {showPublishModal && (
+                            <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-gray-900/40 backdrop-blur-sm">
+                                <div className="bg-white w-full max-w-sm rounded-[40px] p-8 shadow-2xl animate-in zoom-in-95 duration-200">
+                                    <div className="flex flex-col items-center mb-6">
+                                        <div className="w-16 h-16 bg-violet-50 rounded-2xl flex items-center justify-center text-3xl mb-4">
+                                            💎
+                                        </div>
+                                        <h2 className="text-xl font-bold text-gray-900 text-center">Publish to Marketplace</h2>
+                                        <p className="text-xs text-gray-500 text-center mt-1">Earn money by sharing your workflow.</p>
+                                    </div>
+
+                                    <form onSubmit={handlePublishProject} className="space-y-4">
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold text-gray-700 ml-1">Price ($)</label>
+                                            <input
+                                                type="number"
+                                                min="0"
+                                                step="0.01"
+                                                required
+                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all text-sm font-bold"
+                                                placeholder="0.00"
+                                                value={publishData.price}
+                                                onChange={(e) => setPublishData({ ...publishData, price: e.target.value })}
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-xs font-semibold text-gray-700 ml-1">Marketing Description</label>
+                                            <textarea
+                                                className="w-full px-5 py-3 bg-gray-50 border border-gray-100 rounded-xl focus:bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none transition-all h-24 text-sm"
+                                                placeholder="Why should people buy this template?"
+                                                value={publishData.description}
+                                                onChange={(e) => setPublishData({ ...publishData, description: e.target.value })}
+                                            ></textarea>
+                                        </div>
+
+                                        {publishStatus.message && (
+                                            <div className={`p-3 rounded-xl text-xs font-medium text-center ${publishStatus.type === 'success' ? 'bg-green-50 text-green-600' :
+                                                publishStatus.type === 'error' ? 'bg-red-50 text-red-600' :
+                                                    'bg-gray-50 text-gray-600 animate-pulse'
+                                                }`}>
+                                                {publishStatus.message}
+                                            </div>
+                                        )}
+
+                                        <div className="flex gap-3 pt-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPublishModal(false)}
+                                                className="flex-1 py-3 bg-gray-50 text-gray-600 rounded-xl font-bold hover:bg-gray-100 transition-all text-sm"
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                type="submit"
+                                                disabled={publishStatus.type === 'loading'}
+                                                className="flex-1 py-3 bg-violet-600 text-white rounded-xl font-bold hover:bg-violet-700 transition-all shadow-lg shadow-violet-100 disabled:opacity-50 text-sm"
+                                            >
+                                                {publishStatus.type === 'loading' ? 'Publishing...' : 'Publish Now'}
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        )}
+
                         {/* Side-Peek Detail Drawer */}
-                        <div className={`fixed inset-y-4 right-4 w-[540px] bg-white/80 backdrop-blur-3xl z-[150] transform transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)] flex flex-col rounded-[48px] border border-white/40 shadow-[-40px_0_100px_rgba(0,0,0,0.1)] ${showEditModal ? 'translate-x-0' : 'translate-x-[120%] invisible pointer-events-none'}`}>
+                        <div
+                            className={`fixed inset-y-0 right-0 left-64 z-[100] bg-white transform transition-transform duration-300 ease-in-out flex flex-col ${showEditModal ? 'translate-x-0' : 'translate-x-full'}`}
+                        >
                             {selectedItem && (
                                 <>
                                     {/* Drawer Header */}
@@ -817,102 +930,119 @@ const ProjectDetail = () => {
                                     </div>
 
                                     {/* Drawer Content */}
-                                    <div className={`flex-1 overflow-y-auto custom-scrollbar p-6 space-y-6`}>
-                                        {/* Main Card */}
-                                        <div className="bg-white/50 backdrop-blur-sm rounded-[40px] p-10 border border-white/60 shadow-sm space-y-10">
-                                            {/* Title Section */}
-                                            <div className="space-y-8">
-                                                <div className="relative group">
-                                                    <input
-                                                        type="text"
-                                                        className="w-full bg-transparent text-5xl font-black text-gray-900 border-none outline-none placeholder:text-gray-100 p-0 focus:ring-0 leading-tight tracking-tight transition-all"
-                                                        placeholder="Untitled"
-                                                        value={editItemData.title}
-                                                        onChange={(e) => setEditItemData({ ...editItemData, title: e.target.value })}
-                                                    />
-                                                    <div className="absolute -bottom-2 left-0 w-0 h-1 bg-indigo-500 transition-all duration-500 group-focus-within:w-20 rounded-full opacity-50"></div>
+                                    <div className={`flex-1 overflow-y-auto custom-scrollbar p-10 space-y-10`}>
+                                        {/* Title Section */}
+                                        <div className="space-y-8">
+                                            <div className="relative group/title">
+                                                <div className="flex items-center gap-2 mb-4 opacity-0 group-hover/title:opacity-100 transition-opacity">
+                                                    <button className="flex items-center gap-1.5 px-2 py-1 hover:bg-gray-100 rounded text-xs text-gray-500 font-medium transition-colors">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                        Add icon
+                                                    </button>
+                                                    <button className="flex items-center gap-1.5 px-2 py-1 hover:bg-gray-100 rounded text-xs text-gray-500 font-medium transition-colors">
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                        Add cover
+                                                    </button>
                                                 </div>
+                                                <input
+                                                    type="text"
+                                                    className="w-full bg-transparent text-5xl font-black text-gray-900 border-none outline-none placeholder:text-gray-200 p-0 focus:ring-0 leading-tight tracking-tight transition-all"
+                                                    placeholder="Untitled"
+                                                    value={editItemData.title}
+                                                    onChange={(e) => setEditItemData({ ...editItemData, title: e.target.value })}
+                                                />
+                                            </div>
 
-                                                {selectedItem.type === 'task' && (
-                                                    <div className="flex items-center gap-8 pt-6 border-t border-gray-100/50">
-                                                        {/* Status Custom Dropdown */}
-                                                        <div className="flex flex-col gap-3 flex-1 relative">
-                                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Status</label>
+                                            {selectedItem.type === 'task' && (
+                                                <div className="pt-2 space-y-1">
+                                                    {/* Status Property */}
+                                                    <div className="group/prop flex items-center min-h-[32px]">
+                                                        <div className="w-[120px] flex items-center gap-2 text-gray-400">
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                            <span className="text-sm font-medium">Status</span>
+                                                        </div>
+                                                        <div className="relative flex-1">
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === 'status' ? null : 'status'); }}
-                                                                className={`flex items-center justify-between bg-white/50 border border-gray-100/50 rounded-2xl px-5 py-4 text-sm font-bold transition-all hover:bg-white hover:border-gray-200 hover:shadow-sm group/btn ${editItemData.status === 'done' ? 'text-green-600' : editItemData.status === 'in-progress' ? 'text-indigo-600' : 'text-gray-700'}`}
+                                                                className={`px-2 py-1 -ml-2 rounded-md hover:bg-gray-100 transition-all text-sm font-medium flex items-center gap-2 ${editItemData.status === 'done' ? 'text-green-600' : editItemData.status === 'in-progress' ? 'text-indigo-600' : 'text-gray-700'}`}
                                                             >
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${editItemData.status === 'done' ? 'bg-green-500' : editItemData.status === 'in-progress' ? 'bg-indigo-500' : 'bg-gray-400'}`}></div>
-                                                                    <span className="capitalize">{editItemData.status.replace('-', ' ')}</span>
-                                                                </div>
-                                                                <svg className={`w-4 h-4 text-gray-300 transition-all duration-300 group-hover/btn:text-gray-600 ${openDropdown === 'status' ? 'rotate-180 text-gray-900' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+                                                                <span className="capitalize">{editItemData.status.replace('-', ' ')}</span>
                                                             </button>
-
                                                             {openDropdown === 'status' && (
-                                                                <div className="absolute top-full left-0 right-0 mt-3 bg-white/90 backdrop-blur-2xl border border-white/50 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-20 py-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                                <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-100 rounded-lg shadow-xl z-20 py-1">
                                                                     {['todo', 'in-progress', 'done'].map(s => (
                                                                         <button
                                                                             key={s}
                                                                             onClick={() => { setEditItemData({ ...editItemData, status: s }); setOpenDropdown(null); }}
-                                                                            className="w-full text-left px-5 py-3.5 hover:bg-indigo-50/50 text-sm font-bold text-gray-700 flex items-center gap-4 transition-all"
+                                                                            className="w-full text-left px-3 py-1.5 hover:bg-gray-50 text-sm text-gray-700 capitalize"
                                                                         >
-                                                                            <div className={`w-2 h-2 rounded-full ${s === 'done' ? 'bg-green-500' : s === 'in-progress' ? 'bg-indigo-500' : 'bg-gray-400'}`}></div>
-                                                                            <span className="capitalize">{s.replace('-', ' ')}</span>
+                                                                            {s.replace('-', ' ')}
                                                                         </button>
                                                                     ))}
                                                                 </div>
                                                             )}
                                                         </div>
+                                                    </div>
 
-                                                        {/* Priority Custom Dropdown */}
-                                                        <div className="flex flex-col gap-3 flex-1 relative">
-                                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] ml-1">Priority</label>
+                                                    {/* Priority Property */}
+                                                    <div className="group/prop flex items-center min-h-[32px]">
+                                                        <div className="w-[120px] flex items-center gap-2 text-gray-400">
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                                            <span className="text-sm font-medium">Priority</span>
+                                                        </div>
+                                                        <div className="relative flex-1">
                                                             <button
                                                                 onClick={(e) => { e.stopPropagation(); setOpenDropdown(openDropdown === 'priority' ? null : 'priority'); }}
-                                                                className={`flex items-center justify-between bg-white/50 border border-gray-100/50 rounded-2xl px-5 py-4 text-sm font-bold transition-all hover:bg-white hover:border-gray-200 hover:shadow-sm group/btn ${editItemData.priority === 'high' ? 'text-red-500' : editItemData.priority === 'medium' ? 'text-amber-600' : 'text-emerald-600'}`}
+                                                                className={`px-2 py-1 -ml-2 rounded-md hover:bg-gray-100 transition-all text-sm font-medium flex items-center gap-2 ${editItemData.priority === 'high' ? 'text-red-500' : editItemData.priority === 'medium' ? 'text-amber-600' : 'text-emerald-600'}`}
                                                             >
-                                                                <div className="flex items-center gap-3">
-                                                                    <div className={`w-2.5 h-2.5 rounded-full shadow-sm ${editItemData.priority === 'high' ? 'bg-red-500' : editItemData.priority === 'medium' ? 'bg-amber-400' : 'bg-emerald-500'}`}></div>
-                                                                    <span className="capitalize">{editItemData.priority}</span>
-                                                                </div>
-                                                                <svg className={`w-4 h-4 text-gray-300 transition-all duration-300 group-hover/btn:text-gray-600 ${openDropdown === 'priority' ? 'rotate-180 text-gray-900' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" /></svg>
+                                                                <span className="capitalize">{editItemData.priority}</span>
                                                             </button>
-
                                                             {openDropdown === 'priority' && (
-                                                                <div className="absolute top-full left-0 right-0 mt-3 bg-white/90 backdrop-blur-2xl border border-white/50 rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] z-20 py-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                                                                <div className="absolute top-full left-0 mt-1 w-48 bg-white border border-gray-100 rounded-lg shadow-xl z-20 py-1">
                                                                     {['low', 'medium', 'high'].map(p => (
                                                                         <button
                                                                             key={p}
                                                                             onClick={() => { setEditItemData({ ...editItemData, priority: p }); setOpenDropdown(null); }}
-                                                                            className="w-full text-left px-5 py-3.5 hover:bg-indigo-50/50 text-sm font-bold text-gray-700 flex items-center gap-4 transition-all"
+                                                                            className="w-full text-left px-3 py-1.5 hover:bg-gray-50 text-sm text-gray-700 capitalize"
                                                                         >
-                                                                            <div className={`w-2 h-2 rounded-full ${p === 'high' ? 'bg-red-500' : p === 'medium' ? 'bg-amber-400' : 'bg-emerald-500'}`}></div>
-                                                                            <span className="capitalize">{p}</span>
+                                                                            {p}
                                                                         </button>
                                                                     ))}
                                                                 </div>
                                                             )}
                                                         </div>
                                                     </div>
-                                                )}
-                                            </div>
+
+                                                    {/* Due Date Property */}
+                                                    <div className="group/prop flex items-center min-h-[32px]">
+                                                        <div className="w-[120px] flex items-center gap-2 text-gray-400">
+                                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                                                            <span className="text-sm font-medium">Due Date</span>
+                                                        </div>
+                                                        <div className="relative flex-1">
+                                                            <input
+                                                                type="date"
+                                                                className="px-2 py-1 -ml-2 rounded-md hover:bg-gray-100 transition-all text-sm font-medium text-gray-700 bg-transparent border-none focus:ring-0 cursor-pointer"
+                                                                value={editItemData.dueDate || ''}
+                                                                onChange={(e) => setEditItemData({ ...editItemData, dueDate: e.target.value })}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
 
-                                        {/* Workspace Card */}
-                                        <div className="bg-white/30 backdrop-blur-md rounded-[40px] p-10 border border-white/40 shadow-sm min-h-[400px]">
+                                        {/* Content Divider */}
+                                        <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
+
+                                        {/* Workspace Content */}
+                                        <div className="min-h-[400px]">
                                             {/* Description Canvas */}
                                             {selectedItem.type !== 'list' && (
-                                                <div className="space-y-4 bg-gray-50/30 p-8 rounded-[32px] border border-gray-100/50">
-                                                    <div className="flex items-center gap-3 text-gray-400 mb-2">
-                                                        <div className="p-2 bg-white rounded-xl shadow-sm border border-gray-50">
-                                                            <svg className="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 6h16M4 12h16M4 18h7" /></svg>
-                                                        </div>
-                                                        <span className="text-[11px] font-black uppercase tracking-[0.2em]">Description</span>
-                                                    </div>
+                                                <div className="space-y-4">
                                                     <textarea
-                                                        className="w-full bg-transparent border-none outline-none text-gray-600 leading-relaxed min-h-[120px] resize-none p-0 focus:ring-0 text-lg placeholder:text-gray-200"
-                                                        placeholder="Add a detailed description..."
+                                                        className="w-full bg-transparent border-none outline-none text-gray-800 leading-relaxed min-h-[300px] resize-none p-0 focus:ring-0 text-lg placeholder:text-gray-300"
+                                                        placeholder="Press '/' for commands..."
                                                         value={editItemData.description}
                                                         onChange={(e) => setEditItemData({ ...editItemData, description: e.target.value })}
                                                     />
@@ -1033,8 +1163,8 @@ const ProjectDetail = () => {
                         )}
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 };
 

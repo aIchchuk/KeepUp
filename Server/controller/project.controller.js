@@ -4,6 +4,37 @@ import Activity from "../models/activity.model.js";
 
 
 
+
+// Toggle Pin
+export const togglePin = async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const project = await Project.findById(id);
+        if (!project) return res.status(404).json({ message: "Project not found" });
+
+        const memberIndex = project.members.findIndex(m => m.user.toString() === req.user._id.toString());
+        if (memberIndex === -1) {
+            // If user is owner but not in members list (shouldn't happen with current create logic, but safe to check)
+            if (project.owner.toString() === req.user._id.toString()) {
+                // Check if owner is already in members, if not add them? 
+                // Creating project adds owner to members. So this case implies data corruption or logic issue.
+                // We'll assume owner IS in members array as per createProject.
+                return res.status(403).json({ message: "Not a member of this project" });
+            }
+            return res.status(403).json({ message: "Not authorized" });
+        }
+
+        // Toggle
+        project.members[memberIndex].isPinned = !project.members[memberIndex].isPinned;
+        await project.save();
+
+        res.json(project);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 // Create Project
 export const createProject = async (req, res) => {
     const { title, description } = req.body;

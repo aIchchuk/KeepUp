@@ -1,0 +1,100 @@
+/* 
+  KeepUp Design System - Variables 
+  Premium, Dynamic, Rich Aesthetic
+*/
+
+:root {
+    /* =========================================
+     Color Palette (HSL for flexibility)
+     ========================================= */
+
+    /* Primary Brand Colors - Electric Violet & Cyber Blue */
+    --primary-hue: 260;
+    --primary-sat: 100%;
+    --primary-light: 65%;
+    --primary-color: hsl(var(--primary-hue), var(--primary-sat), var(--primary-light));
+
+    --accent-hue: 190;
+    --accent-sat: 100%;
+    --accent-light: 50%;
+    --accent-color: hsl(var(--accent-hue), var(--accent-sat), var(--accent-light));
+
+    /* Backgrounds - Deep Space */
+    --bg-dark-900: hsl(240, 30%, 4%);
+    /* Main Background */
+    --bg-dark-800: hsl(240, 25%, 8%);
+    /* Sidebar/Cards */
+    --bg-dark-700: hsl(240, 20%, 12%);
+    /* Hover States */
+    --bg-dark-600: hsl(240, 15%, 16%);
+    /* Inputs/Borders */
+
+    /* Text Colors */
+    --text-main: hsl(0, 0%, 100%);
+    --text-muted: hsl(240, 10%, 70%);
+    --text-dim: hsl(240, 10%, 40%);
+
+    /* Status Colors */
+    --success: hsl(150, 100%, 45%);
+    --warning: hsl(35, 100%, 60%);
+    --danger: hsl(350, 100%, 60%);
+    --info: hsl(210, 100%, 60%);
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(260, 100%, 60%), hsl(290, 100%, 60%));
+    --gradient-accent: linear-gradient(135deg, hsl(190, 100%, 50%), hsl(220, 100%, 60%));
+    --gradient-dark: linear-gradient(to bottom, var(--bg-dark-800), var(--bg-dark-900));
+    --gradient-glass: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+
+    /* =========================================
+     Glassmorphism
+     ========================================= */
+    --glass-bg: rgba(20, 20, 35, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    --backdrop-blur: 12px;
+
+    /* =========================================
+     Typography
+     ========================================= */
+    --font-family-main: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+    --font-family-mono: 'JetBrains Mono', monospace;
+
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: 1.25rem;
+    --text-2xl: 1.5rem;
+    --text-3xl: 2rem;
+    --text-4xl: 3rem;
+
+    /* =========================================
+     Spacing & Layout
+     ========================================= */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-full: 9999px;
+
+    /* =========================================
+     Effects & Animations
+     ========================================= */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 20px rgba(138, 43, 226, 0.3);
+    /* Glow effect for primary actions */
+
+    --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-normal: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
