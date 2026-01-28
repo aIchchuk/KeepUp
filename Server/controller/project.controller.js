@@ -63,6 +63,24 @@ export const getProjects = async (req, res) => {
     res.json(projects);
 };
 
+// Get Single Project
+export const getProjectById = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const project = await Project.findById(id).populate("owner", "name email");
+        if (!project) return res.status(404).json({ message: "Project not found" });
+
+        const isMember = project.members.some(member => member.user.toString() === req.user._id.toString());
+        if (!isMember && project.owner._id.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ message: "Not authorized to view this project" });
+        }
+
+        res.json(project);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
+
 // Update Project
 export const updateProject = async (req, res) => {
     const { id } = req.params;

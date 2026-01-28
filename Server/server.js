@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
-
+import xssMiddleware from "./middleware/xss.middleware.js";
 
 // Routes
 import userRoutes from "./routes/user.routes.js";
@@ -21,7 +21,26 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-app.use(helmet());
+
+// Enhanced Security with Helmet
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline might be needed for some dev tools, but ideally 'self' only
+            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+            imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://res.cloudinary.com"], // Allow common image sources
+            connectSrc: ["'self'"],
+            fontSrc: ["'self'", "https://fonts.gstatic.com"],
+            objectSrc: ["'none'"],
+            mediaSrc: ["'self'"],
+            frameSrc: ["'none'"],
+        },
+    },
+}));
+
+// Sanitize user input against XSS
+app.use(xssMiddleware);
 
 // Rate limiting for login endpoint
 const loginLimiter = rateLimit({

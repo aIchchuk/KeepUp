@@ -10,6 +10,7 @@ import Profile from './pages/Profile';
 import Dashboard from './pages/Dashboard';
 import ProjectDetail from './pages/ProjectDetail';
 import Marketplace from './pages/Marketplace';
+import PaymentResult from './pages/PaymentResult';
 
 
 import './App.css';
@@ -27,6 +28,7 @@ function App() {
             <Route element={<><Navbar /><Login /></>} path="/login" />
             <Route element={<><Navbar /><Register /></>} path="/register" />
             <Route element={<><Navbar /><VerifyMfa /></>} path="/verify-mfa" />
+            <Route element={<PaymentResult />} path="/payment/callback" />
 
             {/* Internal Dashboard Routes with Sidebar */}
             <Route element={<DashboardLayout />}>

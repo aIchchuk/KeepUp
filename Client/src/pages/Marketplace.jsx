@@ -11,6 +11,13 @@ const Marketplace = () => {
     const [purchaseStatus, setPurchaseStatus] = useState({ id: null, type: '', message: '' });
     const [editingTemplate, setEditingTemplate] = useState(null);
     const [editForm, setEditForm] = useState({ title: '', description: '', price: 0 });
+    const [searchQuery, setSearchQuery] = useState('');
+    const [isSearchVisible, setIsSearchVisible] = useState(false);
+
+    const filteredTemplates = templates.filter(template =>
+        template.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        template.description.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     useEffect(() => {
         fetchTemplates();
@@ -28,12 +35,23 @@ const Marketplace = () => {
     };
 
     const handleBuyTemplate = async (templateId) => {
-        setPurchaseStatus({ id: templateId, type: 'loading', message: 'Processing purchase...' });
+        setPurchaseStatus({ id: templateId, type: 'loading', message: 'Redirecting to Khalti...' });
         try {
-            const res = await api.post('/templates/buy', { templateId });
-            setPurchaseStatus({ id: templateId, type: 'success', message: res.data.message });
+            const res = await api.post('/payment/khalti/initiate', { templateId });
+
+            if (res.data.payment_url) {
+                // Redirect user to Khalti Payment Portal
+                window.location.href = res.data.payment_url;
+            } else {
+                throw new Error("Payment URL not provided");
+            }
         } catch (err) {
-            setPurchaseStatus({ id: templateId, type: 'error', message: err.response?.data?.message || 'Purchase failed' });
+            setPurchaseStatus({
+                id: templateId,
+                type: 'error',
+                message: err.response?.data?.message || 'Payment initiation failed'
+            });
+            setTimeout(() => setPurchaseStatus({ id: null, type: '', message: '' }), 5000);
         }
     };
 
@@ -78,10 +96,34 @@ const Marketplace = () => {
     return (
         <div className="marketplace-container">
             <div className="marketplace-header">
-                <h1>Template Marketplace</h1>
-                <p>
-                    Skip the setup and get straight to work. Discover high-quality templates created by experts.
-                </p>
+                <div className="header-text">
+                    <h1>Template Marketplace</h1>
+                    <p>
+                        Discover high-quality templates created by experts.
+                    </p>
+                </div>
+                <div className={`search-wrapper ${isSearchVisible ? 'active' : ''}`}>
+                    <button
+                        className="search-toggle-btn"
+                        onClick={() => setIsSearchVisible(!isSearchVisible)}
+                        aria-label="Toggle search"
+                    >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                    <div className="search-container">
+                        <input
+                            type="text"
+                            placeholder="Search templates..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="search-input"
+                            autoFocus={isSearchVisible}
+                        />
+                    </div>
+                </div>
             </div>
 
             {loading ? (
@@ -92,10 +134,18 @@ const Marketplace = () => {
                 </div>
             ) : (
                 <div className="templates-grid">
-                    {templates.map(template => (
+                    {filteredTemplates.map(template => (
                         <div key={template._id} className="template-card">
                             <div className="template-preview">
-                                <div className="template-icon">💎</div>
+                                {template.structure?.projectSettings?.coverImage ? (
+                                    <img
+                                        src={template.structure.projectSettings.coverImage}
+                                        alt={template.title}
+                                        className="template-cover-img"
+                                    />
+                                ) : (
+                                    <div className="template-icon">💎</div>
+                                )}
                                 <div className="template-price">
                                     ${template.price || 0}
                                 </div>
@@ -169,14 +219,14 @@ const Marketplace = () => {
                                                     onClick={() => handleEditClick(template)}
                                                     style={{ flex: 1 }}
                                                 >
-                                                    ✏️ Edit
+                                                    Edit
                                                 </Button>
                                                 <Button
                                                     variant="danger"
                                                     onClick={() => handleDeleteTemplate(template._id)}
                                                     style={{ flex: 1 }}
                                                 >
-                                                    🗑️ Delete
+                                                    Delete
                                                 </Button>
                                             </div>
                                         ) : (

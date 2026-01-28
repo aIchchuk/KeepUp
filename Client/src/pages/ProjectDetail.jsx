@@ -93,12 +93,11 @@ const ProjectDetail = () => {
     const fetchProjectData = async () => {
         try {
             const [projRes, itemsRes] = await Promise.all([
-                api.get(`/projects`),
+                api.get(`/projects/${id}`),
                 api.get(`/projects/${id}/tasks`)
             ]);
 
-            const foundProject = projRes.data.find(p => p._id === id);
-            setProject(foundProject);
+            setProject(projRes.data);
             setItems(itemsRes.data);
         } catch (err) {
             console.error('Error fetching project data:', err);
@@ -192,10 +191,11 @@ const ProjectDetail = () => {
 
     const handleProjectUpdate = async (updates) => {
         try {
-            await api.patch(`/projects/${id}`, updates);
+            const res = await api.patch(`/projects/${id}`, updates);
+            setProject(res.data); // Update state immediately
             setShowCoverModal(false);
             setShowEmojiModal(false);
-            fetchProjectData();
+            await fetchProjectData(); // Await full sync
         } catch (err) {
             console.error('Error updating project:', err);
             alert(`Failed to update project: ${err.response?.data?.message || err.message}`);
