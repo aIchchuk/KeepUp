@@ -6,6 +6,7 @@ import Project from "../models/project.model.js";
 import Task from "../models/task.model.js";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { validateUrl } from "../utils/ssrf.util.js";
 
 dotenv.config();
 
@@ -124,7 +125,12 @@ export const initializeKhalti = async (req, res) => {
             }
         };
 
-        const response = await axios.post(`${KHALTI_BASE_URL}/epayment/initiate/`, payload, {
+        const targetUrl = `${KHALTI_BASE_URL}/epayment/initiate/`;
+        if (!validateUrl(targetUrl)) {
+            return res.status(400).json({ message: "Invalid payment gateway URL" });
+        }
+
+        const response = await axios.post(targetUrl, payload, {
             headers: {
                 Authorization: `Key ${KHALTI_SECRET_KEY}`,
                 "Content-Type": "application/json"
@@ -151,7 +157,12 @@ export const verifyKhalti = async (req, res) => {
     try {
         const { pidx } = req.body;
 
-        const response = await axios.post(`${KHALTI_BASE_URL}/epayment/lookup/`, { pidx }, {
+        const targetUrl = `${KHALTI_BASE_URL}/epayment/lookup/`;
+        if (!validateUrl(targetUrl)) {
+            return res.status(400).json({ message: "Invalid payment gateway URL" });
+        }
+
+        const response = await axios.post(targetUrl, { pidx }, {
             headers: {
                 Authorization: `Key ${KHALTI_SECRET_KEY}`,
                 "Content-Type": "application/json"

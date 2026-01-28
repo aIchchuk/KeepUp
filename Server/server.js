@@ -5,6 +5,7 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import xssMiddleware from "./middleware/xss.middleware.js";
+import csrfMiddleware from "./middleware/csrf.middleware.js";
 
 // Routes
 import userRoutes from "./routes/user.routes.js";
@@ -41,6 +42,9 @@ app.use(helmet({
 
 // Sanitize user input against XSS
 app.use(xssMiddleware);
+
+// CSRF Protection
+app.use(csrfMiddleware);
 
 // Rate limiting for login endpoint
 const loginLimiter = rateLimit({
