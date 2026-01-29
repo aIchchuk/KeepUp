@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/api';
 import Button from '../components/ui/Button';
+import { useCart } from '../context/CartContext';
 import '../styles/Marketplace.css';
 
 const Marketplace = () => {
     const { user } = useAuth();
+    const { addToCart, isInCart } = useCart();
     const [templates, setTemplates] = useState([]);
     const [loading, setLoading] = useState(true);
     const [purchaseStatus, setPurchaseStatus] = useState({ id: null, type: '', message: '' });
@@ -230,13 +232,23 @@ const Marketplace = () => {
                                                 </Button>
                                             </div>
                                         ) : (
-                                            <Button
-                                                variant="primary"
-                                                onClick={() => handleBuyTemplate(template._id)}
-                                                style={{ width: '100%' }}
-                                            >
-                                                Purchase Template
-                                            </Button>
+                                            <div className="purchase-actions">
+                                                <Button
+                                                    variant={isInCart(template._id) ? "secondary" : "primary"}
+                                                    onClick={() => !isInCart(template._id) && addToCart(template._id)}
+                                                    style={{ flex: 1 }}
+                                                    disabled={isInCart(template._id)}
+                                                >
+                                                    {isInCart(template._id) ? 'In Cart' : 'Add to Cart'}
+                                                </Button>
+                                                <Button
+                                                    variant="secondary"
+                                                    onClick={() => handleBuyTemplate(template._id)}
+                                                    className="buy-now-btn"
+                                                >
+                                                    Buy Now
+                                                </Button>
+                                            </div>
                                         )}
                                     </>
                                 )}

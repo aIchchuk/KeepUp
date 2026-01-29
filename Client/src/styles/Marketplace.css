@@ -258,3 +258,13 @@
 .search-input::placeholder {
     color: var(--text-dim);
 }
+
+.purchase-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    width: 100%;
+}
+
+.buy-now-btn {
+    min-width: fit-content;
+}
