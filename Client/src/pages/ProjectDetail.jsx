@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../api/api';
 import { useAuth } from '../context/AuthContext';
+import { getFullImageUrl } from '../api/imageUtils';
 import {
     DndContext,
     closestCorners,
@@ -274,7 +275,7 @@ const ProjectDetail = () => {
             {/* Background Image */}
             <div
                 className="project-bg-image"
-                style={{ backgroundImage: `url(${project.coverImage || "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=2000"})` }}
+                style={{ backgroundImage: `url(${getFullImageUrl(project.coverImage)})` }}
             >
                 <div className="project-bg-overlay" />
             </div>
@@ -460,8 +461,32 @@ const ProjectDetail = () => {
             {/* Cover Image Modal */}
             <Modal isOpen={showCoverModal} onClose={() => setShowCoverModal(false)} title="Change Cover Image">
                 <div className="ui-input-wrapper" style={{ gap: '16px' }}>
+                    <div className="ui-input-wrapper">
+                        <label className="ui-label">Upload Image File</label>
+                        <input
+                            type="file"
+                            className="ui-input"
+                            accept="image/*"
+                            onChange={async (e) => {
+                                const file = e.target.files[0];
+                                if (!file) return;
+                                const formData = new FormData();
+                                formData.append('image', file);
+                                try {
+                                    const res = await api.post(`/projects/${id}/image`, formData, {
+                                        headers: { 'Content-Type': 'multipart/form-data' }
+                                    });
+                                    setProject({ ...project, coverImage: res.data.coverImage });
+                                    setShowCoverModal(false);
+                                } catch (err) {
+                                    alert('Failed to upload image');
+                                }
+                            }}
+                        />
+                    </div>
+                    <div style={{ textAlign: 'center', color: 'var(--text-muted)' }}>OR</div>
                     <Input
-                        label="Image URL"
+                        label="External Image URL"
                         type="url"
                         value={tempCoverUrl}
                         onChange={e => setTempCoverUrl(e.target.value)}
@@ -469,7 +494,7 @@ const ProjectDetail = () => {
                     />
                     <div className="form-actions">
                         <Button variant="secondary" onClick={() => setShowCoverModal(false)} style={{ flex: 1 }}>Cancel</Button>
-                        <Button variant="primary" onClick={() => handleProjectUpdate({ coverImage: tempCoverUrl })} style={{ flex: 1 }}>Update Cover</Button>
+                        <Button variant="primary" onClick={() => handleProjectUpdate({ coverImage: tempCoverUrl })} style={{ flex: 1 }}>Update URL</Button>
                     </div>
                 </div>
             </Modal>

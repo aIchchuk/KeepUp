@@ -5,6 +5,11 @@ const activitySchema = new mongoose.Schema({
     actionType: { type: String, required: true }, // e.g., "login", "task_create", "template_purchase"
     metadata: Object, // any extra info (taskId, templateId, IP, etc.)
     ipAddress: String,
+    severity: {
+        type: String,
+        enum: ["low", "medium", "high", "critical"],
+        default: "low"
+    },
     createdAt: { type: Date, default: Date.now }
 });
 

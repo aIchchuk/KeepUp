@@ -220,3 +220,38 @@ export const deleteTemplate = async (req, res) => {
         res.status(500).json({ message: "Failed to delete template", error: err.message });
     }
 };
+
+// Upload Template Image
+export const uploadTemplateImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const template = await Template.findById(req.params.id);
+        if (!template) return res.status(404).json({ message: "Template not found" });
+
+        // Normalize path for URL usage
+        const imagePath = `/public/images/template/${req.file.filename}`;
+
+        // Update top-level or structure?
+        // Template model has structure.projectSettings.coverImage
+        if (template.structure) {
+            if (!template.structure.projectSettings) {
+                template.structure.projectSettings = {};
+            }
+            template.structure.projectSettings.coverImage = imagePath;
+            template.markModified('structure');
+        }
+
+        await template.save();
+
+        res.json({
+            message: "Template image uploaded",
+            coverImage: imagePath
+        });
+    } catch (error) {
+        console.error("Template Image Upload Error:", error);
+        res.status(500).json({ message: "Server error during image upload" });
+    }
+};

@@ -9,7 +9,7 @@ const taskSchema = new mongoose.Schema({
     parentId: { type: mongoose.Schema.Types.ObjectId, ref: "Task", default: null },
     content: { type: String }, // For page type
     icon: { type: String, default: "📄" },
-    coverImage: { type: String, default: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=2000" },
+    coverImage: { type: String, default: "/public/images/default/task.png" },
     dueDate: Date,
     project: { type: mongoose.Schema.Types.ObjectId, ref: "Project", required: true },
     assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

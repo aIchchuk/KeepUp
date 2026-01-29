@@ -149,3 +149,29 @@ export const deleteTask = async (req, res) => {
     }
 };
 
+// Upload Task Cover Image
+export const uploadTaskImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const task = await Task.findById(req.params.taskId);
+        if (!task) return res.status(404).json({ message: "Item not found" });
+
+        // Normalize path for URL usage
+        const imagePath = `/public/images/task/${req.file.filename}`;
+
+        task.coverImage = imagePath;
+        await task.save();
+
+        res.json({
+            message: "Item image uploaded",
+            coverImage: task.coverImage
+        });
+    } catch (error) {
+        console.error("Task Image Upload Error:", error);
+        res.status(500).json({ message: "Server error during image upload" });
+    }
+};
+

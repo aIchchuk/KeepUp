@@ -4,6 +4,9 @@ import bcrypt from "bcryptjs";
 
 import jwt from "jsonwebtoken";
 import { sendOtpEmail } from "../utils/mail.util.js";
+import { fileTypeFromFile } from 'file-type';
+import fs from 'fs';
+import { logSecurityAlert } from "../utils/logger.util.js";
 
 // Generate JWT
 const generateToken = (id) => {
@@ -94,7 +97,16 @@ export const verifyMfa = async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(code, user.mfaCode);
-    if (!isMatch) return res.status(400).json({ message: "Invalid MFA code" });
+    if (!isMatch) {
+        await logSecurityAlert({
+            user: user._id,
+            actionType: "mfa_failure",
+            ipAddress: req.ip,
+            severity: "high",
+            metadata: { email: user.email, attempt: "incorrect_otp" }
+        });
+        return res.status(400).json({ message: "Invalid MFA code" });
+    }
 
     // Clear MFA code after successful login
     user.mfaCode = undefined;
@@ -149,9 +161,21 @@ export const uploadProfileImage = async (req, res) => {
             return res.status(400).json({ message: "No file uploaded" });
         }
 
+        // Validate actual file content (Magic Bytes) - OWASP A08:2025
+        const type = await fileTypeFromFile(req.file.path);
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+        if (!type || !allowedTypes.includes(type.mime)) {
+            // Delete the invalid file from server
+            if (fs.existsSync(req.file.path)) {
+                fs.unlinkSync(req.file.path);
+            }
+            return res.status(400).json({ message: "Invalid file content. Only images (JPG, PNG, WEBP) are allowed." });
+        }
+
         const user = await User.findById(req.user._id);
         // Normalize path for Windows/Unix compatibility and URL usage
-        const imagePath = `public/userImages/${req.file.filename}`;
+        const imagePath = `/public/images/user/${req.file.filename}`;
 
         user.profilePicture = imagePath;
         const updatedUser = await user.save();

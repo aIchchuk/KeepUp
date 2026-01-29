@@ -21,10 +21,14 @@ const xssMiddleware = (req, res, next) => {
         req.body = sanitize(req.body);
     }
     if (req.query) {
-        req.query = sanitize(req.query);
+        for (let key in req.query) {
+            req.query[key] = sanitize(req.query[key]);
+        }
     }
     if (req.params) {
-        req.params = sanitize(req.params);
+        for (let key in req.params) {
+            req.params[key] = sanitize(req.params[key]);
+        }
     }
     next();
 };

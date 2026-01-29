@@ -9,7 +9,7 @@ const projectSchema = new mongoose.Schema({
         role: { type: String, enum: ["owner", "member"], default: "member" },
         isPinned: { type: Boolean, default: false }
     }],
-    coverImage: { type: String, default: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&q=80&w=2000" },
+    coverImage: { type: String, default: "/public/images/default/project.png" },
     icon: { type: String, default: "🚀" },
     createdAt: { type: Date, default: Date.now }
 });

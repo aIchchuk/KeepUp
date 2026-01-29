@@ -149,3 +149,29 @@ export const inviteMember = async (req, res) => {
     }
 };
 
+// Upload Project Image
+export const uploadProjectImage = async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "No file uploaded" });
+        }
+
+        const project = await Project.findById(req.params.id);
+        if (!project) return res.status(404).json({ message: "Project not found" });
+
+        // Normalize path for URL usage
+        const imagePath = `/public/images/project/${req.file.filename}`;
+
+        project.coverImage = imagePath;
+        await project.save();
+
+        res.json({
+            message: "Project image uploaded",
+            coverImage: project.coverImage
+        });
+    } catch (error) {
+        console.error("Project Image Upload Error:", error);
+        res.status(500).json({ message: "Server error during image upload" });
+    }
+};
+

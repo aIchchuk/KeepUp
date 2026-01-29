@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import api from '../api/api';
+import { getFullImageUrl } from '../api/imageUtils';
 import '../styles/Profile.css';
 
 const Profile = () => {
@@ -41,7 +42,6 @@ const Profile = () => {
             const res = await api.post('/users/profile/image', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
-            // Update user with new profile picture
             const updatedUser = { ...user, profilePicture: res.data.profilePicture };
             updateUser(updatedUser);
             setMessage('Profile image updated successfully');
@@ -67,25 +67,16 @@ const Profile = () => {
         }
     };
 
-    // Construct image URL (assuming server is on localhost:5000 for dev)
-    const getImageUrl = (path) => {
-        if (!path) return null;
-        if (path.startsWith('http')) return path;
-        // Simple heuristic for dev environment
-        return `http://localhost:5000/${path}`;
-    };
-
     if (!user) return <div style={{ textAlign: 'center', padding: '100px' }}>Please log in to view your profile.</div>;
 
     return (
         <div className="profile-container">
             <div className="profile-card">
-                {/* Header */}
                 <div className="profile-header">
                     <div className="profile-image-upload" onClick={handleImageClick}>
                         <div className="profile-avatar overflow-hidden">
                             {user.profilePicture ? (
-                                <img src={getImageUrl(user.profilePicture)} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img src={getFullImageUrl(user.profilePicture)} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
                                 user.name.charAt(0)
                             )}
@@ -123,7 +114,7 @@ const Profile = () => {
                                     title="Edit Name"
                                     style={{ color: 'white' }}
                                 >
-                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                                 </button>
                             </div>
                         )}
@@ -134,7 +125,6 @@ const Profile = () => {
                     </div>
                 </div>
 
-                {/* Security Section */}
                 <div className="profile-section">
                     <div style={{ marginBottom: '24px' }}>
                         <h2 className="section-title">Security Settings</h2>
@@ -169,7 +159,6 @@ const Profile = () => {
                     )}
                 </div>
 
-                {/* Account Details */}
                 <div className="profile-section">
                     <h2 className="section-title" style={{ marginBottom: '24px' }}>Account Details</h2>
                     <div className="details-grid">

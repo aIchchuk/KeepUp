@@ -29,9 +29,9 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "'unsafe-inline'"], // unsafe-inline might be needed for some dev tools, but ideally 'self' only
+            scriptSrc: ["'self'", "'unsafe-inline'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://res.cloudinary.com"], // Allow common image sources
+            imgSrc: ["'self'", "data:", "https://images.unsplash.com", "https://res.cloudinary.com", "http://localhost:5000", "https://keepup-task.onrender.com"], // Allow self and common sources
             connectSrc: ["'self'"],
             fontSrc: ["'self'", "https://fonts.gstatic.com"],
             objectSrc: ["'none'"],
@@ -39,7 +39,11 @@ app.use(helmet({
             frameSrc: ["'none'"],
         },
     },
+    crossOriginResourcePolicy: { policy: "cross-origin" } // Allow cross-origin images
 }));
+
+// Static Files
+app.use("/public", express.static("public"));
 
 // Sanitize user input against XSS
 app.use(xssMiddleware);

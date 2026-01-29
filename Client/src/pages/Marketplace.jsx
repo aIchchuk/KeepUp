@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/api';
 import Button from '../components/ui/Button';
 import { useCart } from '../context/CartContext';
+import { getFullImageUrl } from '../api/imageUtils';
 import '../styles/Marketplace.css';
 
 const Marketplace = () => {
@@ -141,7 +142,7 @@ const Marketplace = () => {
                             <div className="template-preview">
                                 {template.structure?.projectSettings?.coverImage ? (
                                     <img
-                                        src={template.structure.projectSettings.coverImage}
+                                        src={getFullImageUrl(template.structure.projectSettings.coverImage)}
                                         alt={template.title}
                                         className="template-cover-img"
                                     />
