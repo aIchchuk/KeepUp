@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
+import CartDrawer from './CartDrawer';
 
 const Navbar = () => {
     const { user, logout } = useAuth();
+    const { cartCount } = useCart();
     const navigate = useNavigate();
+    const [isCartOpen, setIsCartOpen] = useState(false);
 
     const handleLogout = () => {
         logout();
@@ -38,6 +42,23 @@ const Navbar = () => {
                             Marketplace
                         </Link>
 
+                        <button
+                            onClick={() => setIsCartOpen(true)}
+                            className="relative p-2 text-gray-300 hover:text-violet-400 transition-colors"
+                            aria-label="View Cart"
+                        >
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            {cartCount > 0 && (
+                                <span className="absolute top-0 right-0 bg-violet-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center border-2 border-gray-900">
+                                    {cartCount}
+                                </span>
+                            )}
+                        </button>
+
                         <Link to="/profile" className="flex items-center gap-3 pr-4 border-l border-white/10 pl-4 hover:opacity-80 transition-opacity">
 
                             <div className="w-8 h-8 rounded-full bg-violet-500/20 flex items-center justify-center text-violet-400 font-bold text-xs uppercase border border-violet-500/30">
@@ -63,6 +84,7 @@ const Navbar = () => {
                     </>
                 )}
             </div>
+            <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
         </nav>
     );
 };
