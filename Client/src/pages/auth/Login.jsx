@@ -5,7 +5,6 @@ import { useAuth } from '../../context/AuthContext';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -31,76 +30,66 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-[80vh] flex items-center justify-center px-6">
-            <div className="w-full max-w-md space-y-8 bg-white p-10 rounded-[32px] border border-gray-100 shadow-2xl shadow-gray-200/50">
-                <div className="text-center space-y-2">
-                    <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Welcome back</h2>
-                    <p className="text-gray-500">Log in to your KeepUp account</p>
+        <div className="min-h-[calc(100vh-80px)] w-full flex items-center justify-center p-4 bg-[#0d1117]">
+            {/* Background Ambience */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden">
+                <div className="absolute top-1/3 left-1/3 w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[100px]"></div>
+            </div>
+
+            <div className="w-full max-w-md bg-[#161b22]/80 backdrop-blur-xl border border-gray-800 rounded-3xl p-8 shadow-2xl relative z-10">
+                <div className="text-center mb-8">
+                    <h2 className="text-2xl font-bold text-white mb-2">Welcome back</h2>
+                    <p className="text-gray-400 text-sm">Sign in to your KeepUp account</p>
                 </div>
 
                 {error && (
-                    <div className="bg-red-50 border border-red-100 text-red-600 px-4 py-3 rounded-xl text-sm font-medium">
+                    <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-medium text-center">
                         {error}
                     </div>
                 )}
 
-                <form className="space-y-5" onSubmit={handleSubmit}>
-                    <div className="space-y-1">
-                        <label className="text-sm font-semibold text-gray-700 ml-1">Email address</label>
+                <form onSubmit={handleSubmit} className="space-y-5">
+                    <div>
+                        <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Email</label>
                         <input
                             type="email"
                             required
-                            className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
-                            placeholder="name@company.com"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            className="w-full px-4 py-3 bg-[#0d1117] border border-gray-700 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all"
+                            placeholder="name@company.com"
                         />
                     </div>
 
-                    <div className="space-y-1">
-                        <div className="flex items-center justify-between ml-1">
-                            <label className="text-sm font-semibold text-gray-700">Password</label>
-                            <a href="#" className="text-xs font-bold text-indigo-600 hover:underline">Forgot?</a>
+                    <div>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-xs font-semibold text-gray-400 uppercase tracking-wider">Password</label>
+                            <a href="#" className="text-xs text-violet-400 hover:text-violet-300">Forgot?</a>
                         </div>
-                        <div className="relative">
-                            <input
-                                type={showPassword ? 'text' : 'password'}
-                                required
-                                className="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all pr-14"
-                                placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-gray-400 hover:text-indigo-600 transition-colors"
-                            >
-                                {showPassword ? (
-                                    <img src="/hide.png" alt="Hide" className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity" />
-                                ) : (
-                                    <img src="/view.png" alt="View" className="w-6 h-6 opacity-60 hover:opacity-100 transition-opacity" />
-                                )}
-
-                            </button>
-                        </div>
+                        <input
+                            type="password"
+                            required
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="w-full px-4 py-3 bg-[#0d1117] border border-gray-700 rounded-xl text-white placeholder-gray-600 focus:outline-none focus:ring-2 focus:ring-violet-500/50 focus:border-violet-500 transition-all"
+                            placeholder="••••••••"
+                        />
                     </div>
-
 
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold text-lg hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-200 disabled:opacity-50 disabled:shadow-none mt-4"
+                        className="w-full py-3.5 bg-white text-black font-bold rounded-xl hover:bg-gray-200 transition-all transform active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed mt-2"
                     >
-                        {loading ? 'Logging in...' : 'Log in'}
+                        {loading ? 'Thinking...' : 'Sign in'}
                     </button>
                 </form>
 
-                <div className="text-center pt-4">
-                    <p className="text-sm text-gray-500">
-                        Don't have an account?{' '}
-                        <Link to="/register" className="text-indigo-600 font-bold hover:underline">
-                            Sign up
+                <div className="mt-8 text-center pt-6 border-t border-gray-800">
+                    <p className="text-gray-500 text-sm">
+                        No account yet?{' '}
+                        <Link to="/register" className="text-violet-400 hover:text-violet-300 font-medium transition-colors">
+                            Create one
                         </Link>
                     </p>
                 </div>
