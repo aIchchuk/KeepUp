@@ -1,185 +1,37 @@
-/* 
-  KeepUp Design System - Global Styles 
-  Using Vanilla CSS for maximum control
-*/
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* =========================================
-   Reset & Base
-   ========================================= */
 * {
-    margin: 0;
-    padding: 0;
     box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+    min-height: 100%;
 }
 
 body {
     margin: 0;
-    padding: 0;
-    font-family: var(--font-family-main);
-    background-color: var(--bg-dark-900);
-    background-image:
-        radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 25%),
-        radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.08) 0%, transparent 25%);
-    color: var(--text-main);
-    min-height: 100vh;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+        sans-serif;
+    background-color: #0d1117;
+    color: #ffffff;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
-    width: 100%;
 }
 
-a {
-    text-decoration: none;
-    color: inherit;
-    transition: color var(--transition-fast);
-}
-
-button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-ul,
-ol {
-    list-style: none;
-}
-
-/* =========================================
-   Scrollbar Customization
-   ========================================= */
+/* Scrollbar */
 ::-webkit-scrollbar {
     width: 8px;
-    height: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: var(--bg-dark-900);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--bg-dark-600);
-    border-radius: var(--radius-full);
+    background: #2a2f36;
+    border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--bg-dark-700);
-}
-
-/* =========================================
-   Utility Classes (Micro-Framework)
-   ========================================= */
-
-/* Typography */
-.text-gradient {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
-    display: inline-block;
-}
-
-.title-large {
-    font-size: var(--text-4xl);
-    font-weight: 700;
-    letter-spacing: -0.02em;
-}
-
-.title-medium {
-    font-size: var(--text-2xl);
-    font-weight: 600;
-    letter-spacing: -0.01em;
-}
-
-.title-small {
-    font-size: var(--text-xl);
-    font-weight: 600;
-}
-
-.text-body {
-    font-size: var(--text-base);
-    color: var(--text-muted);
-    line-height: 1.6;
-}
-
-/* Layout Utilities */
-.flex {
-    display: flex;
-}
-
-.flex-col {
-    flex-direction: column;
-}
-
-.flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.flex-between {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.gap-sm {
-    gap: var(--spacing-sm);
-}
-
-.gap-md {
-    gap: var(--spacing-md);
-}
-
-.gap-lg {
-    gap: var(--spacing-lg);
-}
-
-.grid {
-    display: grid;
-}
-
-.container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 var(--spacing-lg);
-}
-
-/* Glassmorphism Utilities */
-.glass-panel {
-    background: var(--glass-bg);
-    backdrop-filter: blur(var(--backdrop-blur));
-    -webkit-backdrop-filter: blur(var(--backdrop-blur));
-    border: 1px solid var(--glass-border);
-    box-shadow: var(--glass-shadow);
-    border-radius: var(--radius-lg);
-}
-
-/* Animations */
-.animate-fade-in {
-    animation: fadeIn 0.5s ease-out forwards;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Interactive Elements */
-.hover-glow {
-    transition: box-shadow var(--transition-normal), transform var(--transition-normal);
-}
-
-.hover-glow:hover {
-    box-shadow: var(--shadow-glow);
-    transform: translateY(-2px);
+    background: #3a3f46;
 }

@@ -1,99 +1,88 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React from "react";
+import { Link } from "react-router-dom";
 
 const Home = () => {
     return (
-        <div className="min-h-screen bg-[#0d1117] text-white selection:bg-violet-500/30 font-sans">
-            {/* Ambient Background Effects */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-600/10 rounded-full blur-[100px]"></div>
-                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px]"></div>
+        <div className="relative min-h-screen bg-[#0d1117] text-white overflow-hidden">
+
+            {/* Subtle background accent */}
+            <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] bg-violet-600/10 rounded-full blur-3xl" />
             </div>
 
-            <main className="relative z-10 max-w-7xl mx-auto px-6 py-20 lg:py-32">
-                {/* Hero Section */}
-                <div className="text-center max-w-4xl mx-auto space-y-8">
+            <main className="relative max-w-6xl mx-auto px-6 py-28">
 
-                    {/* Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-sm shadow-inner shadow-white/5">
-                        <span className="relative flex h-2.5 w-2.5">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-violet-500"></span>
-                        </span>
-                        <span className="text-sm font-medium text-violet-200">Marketplace Live 2.0</span>
-                    </div>
+                {/* Hero */}
+                <section className="max-w-3xl mx-auto text-center space-y-7">
+                    <span className="inline-flex items-center gap-2 text-sm px-4 py-1.5 rounded-full bg-violet-600/10 text-violet-300 border border-violet-600/20">
+                        ● Marketplace v2.0
+                    </span>
 
-                    {/* Headline */}
-                    <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight leading-none text-white drop-shadow-lg">
-                        Keep your focus, <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">
-                            stay on track.
-                        </span>
+                    <h1 className="text-4xl md:text-6xl font-semibold tracking-tight leading-tight">
+                        Stay focused.
+                        <br />
+                        <span className="text-gray-300">Build momentum.</span>
                     </h1>
 
-                    {/* Subheadline */}
-                    <p className="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
-                        The all-in-one workspace for your tasks, notes, and projects.
-                        Simple enough for personal use, powerful enough for teams.
+                    <p className="text-gray-400 text-lg leading-relaxed">
+                        KeepUp helps you organize tasks, notes, and projects in one
+                        calm workspace designed for deep focus.
                     </p>
 
-                    {/* CTA Buttons */}
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-                        <Link to="/register" className="w-full sm:w-auto px-8 py-4 bg-white text-black rounded-2xl font-bold text-lg hover:bg-gray-200 transition-all transform hover:scale-105 shadow-xl shadow-white/10">
-                            Start for free
+                    <div className="flex justify-center gap-4 pt-6">
+                        <Link
+                            to="/register"
+                            className="px-6 py-3 bg-violet-600 rounded-md font-medium hover:bg-violet-500 transition"
+                        >
+                            Get started
                         </Link>
-                        <Link to="/login" className="w-full sm:w-auto px-8 py-4 bg-white/5 text-white border border-white/10 rounded-2xl font-bold text-lg hover:bg-white/10 transition-colors backdrop-blur-sm">
-                            Live Demo
+                        <Link
+                            to="/login"
+                            className="px-6 py-3 border border-white/10 rounded-md text-gray-300 hover:text-white"
+                        >
+                            View demo
                         </Link>
                     </div>
-                </div>
+                </section>
 
-                {/* Features Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-24">
-                    {/* Feature 1 */}
-                    <div className="p-8 rounded-3xl bg-[#161b22]/50 border border-white/5 backdrop-blur-sm hover:border-violet-500/30 transition-colors group">
-                        <div className="w-14 h-14 bg-gradient-to-br from-violet-500/20 to-indigo-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <span className="text-2xl">📋</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-3">Project Management</h3>
-                        <p className="text-gray-400 leading-relaxed">
-                            Intuitive boards and lists to organize your tasks. Drag, drop, and done.
-                        </p>
-                    </div>
+                {/* Divider */}
+                <div className="my-24 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-                    {/* Feature 2 */}
-                    <div className="p-8 rounded-3xl bg-[#161b22]/50 border border-white/5 backdrop-blur-sm hover:border-fuchsia-500/30 transition-colors group">
-                        <div className="w-14 h-14 bg-gradient-to-br from-fuchsia-500/20 to-pink-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <span className="text-2xl">🔒</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-3">Enterprise Security</h3>
-                        <p className="text-gray-400 leading-relaxed">
-                            Bank-grade encryption, MFA, and OWASP-compliant security protocols.
-                        </p>
-                    </div>
+                {/* Features */}
+                <section className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {[
+                        {
+                            title: "Task Management",
+                            desc: "Organize work with clean boards and workflows that scale."
+                        },
+                        {
+                            title: "Security First",
+                            desc: "MFA, encryption, and privacy-first infrastructure."
+                        },
+                        {
+                            title: "Template Marketplace",
+                            desc: "Reusable workflows built by productivity experts."
+                        }
+                    ].map((item, i) => (
+                        <div
+                            key={i}
+                            className="p-8 rounded-xl bg-[#161b22] border border-white/10"
+                        >
+                            <div className="w-10 h-10 mb-4 rounded-md bg-violet-600/15 text-violet-400 flex items-center justify-center font-semibold">
+                                {i + 1}
+                            </div>
 
-                    {/* Feature 3 */}
-                    <div className="p-8 rounded-3xl bg-[#161b22]/50 border border-white/5 backdrop-blur-sm hover:border-amber-500/30 transition-colors group">
-                        <div className="w-14 h-14 bg-gradient-to-br from-amber-500/20 to-orange-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                            <span className="text-2xl">💎</span>
+                            <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                            <p className="text-gray-400 text-sm leading-relaxed">
+                                {item.desc}
+                            </p>
                         </div>
-                        <h3 className="text-xl font-bold text-white mb-3">Marketplace</h3>
-                        <p className="text-gray-400 leading-relaxed">
-                            Buy and sell premium templates. Monetize your productivity workflow.
-                        </p>
-                    </div>
-                </div>
+                    ))}
+                </section>
             </main>
 
-            {/* Footer */}
-            <footer className="border-t border-white/5 py-12 text-center text-gray-500 text-sm">
-                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                    <p>© 2026 KeepUp Inc.</p>
-                    <div className="flex gap-6">
-                        <Link to="/docs" className="hover:text-white transition-colors">Documentation</Link>
-                        <Link to="/docs/abbreviations" className="hover:text-white transition-colors">Glossary</Link>
-                    </div>
-                </div>
+            <footer className="border-t border-white/10 py-10 text-center text-gray-500 text-sm">
+                © 2026 KeepUp Inc.
             </footer>
         </div>
     );
