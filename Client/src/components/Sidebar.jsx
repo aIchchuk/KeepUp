@@ -60,6 +60,7 @@ const Sidebar = () => {
     const navItems = [
         { name: 'Dashboard', icon: '/dashboard.png', path: '/dashboard' },
         { name: 'Marketplace', icon: '/shopping-cart.png', path: '/marketplace' },
+        { name: 'My Cart', icon: '/shopping-cart.png', path: '/cart' },
         { name: 'Profile', icon: '/user.png', path: '/profile' },
     ];
 

@@ -1,0 +1,203 @@
+.cart-page-container {
+    padding: 0 var(--spacing-lg) var(--spacing-md);
+    max-width: 1200px;
+    margin: 0 auto;
+    color: var(--text-main);
+    min-height: 80vh;
+}
+
+.cart-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: var(--spacing-2xl);
+    padding-top: var(--spacing-md);
+}
+
+.cart-page-header h1 {
+    font-size: var(--text-4xl);
+    font-weight: 800;
+    margin-bottom: var(--spacing-xs);
+    background: var(--gradient-primary);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.cart-page-header p {
+    color: var(--text-muted);
+    font-size: var(--text-lg);
+}
+
+.empty-cart-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-2xl);
+    text-align: center;
+    background: var(--bg-dark-800);
+    border-radius: var(--radius-xl);
+    border: 1px dashed var(--glass-border);
+    margin-top: var(--spacing-xl);
+}
+
+.empty-cart-icon {
+    font-size: 5rem;
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.5;
+}
+
+.empty-cart-state h2 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-cart-state p {
+    color: var(--text-muted);
+    margin-bottom: var(--spacing-xl);
+    max-width: 400px;
+}
+
+.cart-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: var(--spacing-2xl);
+    align-items: start;
+}
+
+.cart-items-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.cart-page-item {
+    display: flex;
+    gap: var(--spacing-lg);
+    background: var(--bg-dark-800);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--glass-border);
+    transition: all var(--transition-normal);
+}
+
+.cart-page-item:hover {
+    border-color: var(--primary-color);
+    transform: translateX(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.item-preview {
+    width: 120px;
+    height: 80px;
+    background: var(--bg-dark-700);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.item-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.item-emoji {
+    font-size: 2rem;
+}
+
+.item-details {
+    flex: 1;
+}
+
+.item-details h3 {
+    font-size: var(--text-lg);
+    margin-bottom: 4px;
+}
+
+.item-details p {
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.item-author {
+    font-size: var(--text-xs);
+    color: var(--text-dim);
+}
+
+.item-price-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.item-price-action .price {
+    font-size: var(--text-xl);
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.remove-btn {
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    padding: 8px;
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+}
+
+.remove-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.cart-summary-card {
+    background: var(--bg-dark-800);
+    padding: var(--spacing-xl);
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--glass-border);
+    position: sticky;
+    top: 100px;
+}
+
+.cart-summary-card h2 {
+    font-size: var(--text-xl);
+    margin-bottom: var(--spacing-xl);
+}
+
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-md);
+    color: var(--text-muted);
+}
+
+.summary-row.total {
+    color: var(--text-main);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    margin-top: var(--spacing-md);
+}
+
+.summary-divider {
+    height: 1px;
+    background: var(--glass-border);
+    margin: var(--spacing-md) 0;
+}
+
+@media (max-width: 1000px) {
+    .cart-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cart-summary-card {
+        position: static;
+    }
+}
