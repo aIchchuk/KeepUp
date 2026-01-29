@@ -14,6 +14,7 @@ import taskRoutes from "./routes/task.routes.js";
 import templateRoutes from "./routes/template.routes.js";
 import activityRoutes from "./routes/activity.routes.js";
 import paymentRoutes from "./routes/payment.routes.js";
+import cartRoutes from "./routes/cart.routes.js";
 
 dotenv.config();
 const app = express();
@@ -62,6 +63,7 @@ app.use("/api/projects/:id/tasks", taskRoutes);
 app.use("/api/templates", templateRoutes);
 app.use("/api/logs", activityRoutes);
 app.use("/api/payment", paymentRoutes);
+app.use("/api/cart", cartRoutes);
 
 const PORT = process.env.PORT || 5000;
 
