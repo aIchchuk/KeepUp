@@ -13,6 +13,12 @@ import ProjectDetail from './pages/ProjectDetail';
 import Marketplace from './pages/Marketplace';
 import Cart from './pages/Cart';
 import PaymentResult from './pages/PaymentResult';
+import OWASPRisk from './pages/documentation/OWASPRisk';
+import ServerDependencies from './pages/documentation/ServerDependencies';
+import ClientDependencies from './pages/documentation/ClientDependencies';
+import DocsHome from './pages/documentation/DocsHome';
+import RiskDetail from './pages/documentation/RiskDetail';
+import Abbreviations from './pages/documentation/Abbreviations';
 
 
 import './App.css';
@@ -32,6 +38,12 @@ function App() {
               <Route element={<><Navbar /><Register /></>} path="/register" />
               <Route element={<><Navbar /><VerifyMfa /></>} path="/verify-mfa" />
               <Route element={<PaymentResult />} path="/payment/callback" />
+              <Route element={<DocsHome />} path="/docs" />
+              <Route element={<OWASPRisk />} path="/docs/OWASPrisk" />
+              <Route element={<RiskDetail />} path="/docs/OWASPrisk/:id" />
+              <Route element={<ServerDependencies />} path="/docs/server-side-dependencies" />
+              <Route element={<ClientDependencies />} path="/docs/client-side-dependencies" />
+              <Route element={<Abbreviations />} path="/docs/abbreviations" />
 
               {/* Internal Dashboard Routes with Sidebar */}
               <Route element={<DashboardLayout />}>

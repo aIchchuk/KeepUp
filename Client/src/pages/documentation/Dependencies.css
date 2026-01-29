@@ -1,0 +1,77 @@
+.dependencies-page.dark-mode {
+    background-color: #0f172a;
+    color: #e2e8f0;
+    min-height: 100vh;
+    padding: 60px 40px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.content-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.content-container h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #60a5fa 0%, #a855f7 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.content-container p {
+    color: #94a3b8;
+    font-size: 1.1rem;
+    margin-bottom: 40px;
+}
+
+.table-wrapper {
+    background: rgba(30, 41, 59, 0.5);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+}
+
+.dep-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.dep-table th {
+    background: rgba(30, 41, 59, 0.8);
+    padding: 20px;
+    font-weight: 600;
+    color: #60a5fa;
+    border-bottom: 2px solid #334155;
+}
+
+.dep-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    color: #cbd5e1;
+}
+
+.dep-table tr:last-child td {
+    border-bottom: none;
+}
+
+.pkg-name {
+    color: #f8fafc;
+    font-weight: 700;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.pkg-version {
+    color: #a855f7;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+@media (max-width: 768px) {
+    .dep-table {
+        font-size: 0.9rem;
+    }
+}

@@ -1,0 +1,103 @@
+.abbreviations-page {
+    background-color: #0d1117;
+    color: #e6edf3;
+    min-height: 100vh;
+    padding: 60px 40px;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.abbreviations-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.abbrev-header {
+    border-bottom: 1px solid #30363d;
+    padding-bottom: 24px;
+    margin-bottom: 40px;
+}
+
+.abbrev-header h1 {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #f0f6fc;
+    margin-bottom: 8px;
+}
+
+.abbrev-header p {
+    font-size: 1rem;
+    color: #8b949e;
+    line-height: 1.5;
+}
+
+.table-wrapper {
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.abbrev-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.abbrev-table th {
+    background-color: #21262d;
+    color: #f0f6fc;
+    padding: 16px 24px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #30363d;
+}
+
+.abbrev-table td {
+    padding: 14px 24px;
+    border-bottom: 1px solid #30363d;
+    color: #c9d1d9;
+    font-size: 0.95rem;
+}
+
+.abbrev-table tr:hover {
+    background-color: rgba(139, 148, 158, 0.05);
+}
+
+.abbrev-table tr:last-child td {
+    border-bottom: none;
+}
+
+.sno-cell {
+    width: 80px;
+    color: #8b949e;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.abbrev-cell {
+    width: 200px;
+    color: #58a6ff;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.fullform-cell {
+    color: #e6edf3;
+}
+
+.abbrev-footer {
+    margin-top: 40px;
+    text-align: center;
+    color: #484f58;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 600px) {
+    .abbreviations-page {
+        padding: 40px 20px;
+    }
+
+    .abbrev-cell {
+        width: 120px;
+    }
+}
